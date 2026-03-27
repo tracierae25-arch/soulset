@@ -647,8 +647,23 @@ function makeStars(){
 
 // Init
 // AUTH
-const users = JSON.parse(localStorage.getItem('ss_users')||'{}');
-let currentUser = localStorage.getItem('ss_current')||null;
+let users = {};
+let currentUser = null;
+
+function loadStorage(){
+  try{
+    users = JSON.parse(localStorage.getItem('ss_users')||'{}');
+    currentUser = localStorage.getItem('ss_current')||null;
+  } catch(e){users={};currentUser=null;}
+}
+
+function saveUsers(){
+  try{localStorage.setItem('ss_users',JSON.stringify(users));}catch(e){}
+}
+
+function saveSession(email){
+  try{localStorage.setItem('ss_current',email);}catch(e){}
+}
 
 function showForgot(){
   ['login-form','signup-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
@@ -684,7 +699,7 @@ function doReset(){
   if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
   if(pass!==confirm){err.textContent='Passwords do not match.';return;}
   users[resetEmail].password=pass;
-  localStorage.setItem('ss_users',JSON.stringify(users));
+  saveUsers();
   document.getElementById('reset-form').classList.add('hidden');
   document.getElementById('login-form').classList.remove('hidden');
   document.getElementById('login-error').textContent='';
@@ -705,7 +720,7 @@ function doLogin(){
   if(!users[email]){err.textContent='No account found. Please sign up.';return;}
   if(users[email].password!==pass){err.textContent='Incorrect password. Try again.';return;}
   currentUser=email;
-  localStorage.setItem('ss_current',email);
+  saveSession(email);
   launchApp(users[email].name);
 }
 
@@ -721,9 +736,9 @@ function doSignup(){
   if(pass!==confirm){err.textContent='Passwords do not match.';return;}
   if(users[email]){err.textContent='An account with this email already exists.';return;}
   users[email]={name,password:pass};
-  localStorage.setItem('ss_users',JSON.stringify(users));
+  saveUsers();
   currentUser=email;
-  localStorage.setItem('ss_current',email);
+  saveSession(email);
   launchApp(name);
 }
 
@@ -739,13 +754,13 @@ function launchApp(name){
 }
 
 function doSignOut(){
-  localStorage.removeItem('ss_current');
+  try{localStorage.removeItem('ss_current');}catch(e){}
   location.reload();
 }
 
 // Check if already logged in
 window.addEventListener('DOMContentLoaded',()=>{
-  // set moon on auth screen
+  loadStorage();
   const moon=getMoonPhase(new Date());
   const el=document.getElementById('auth-moon-emoji');
   if(el)el.textContent=moon.emoji;
