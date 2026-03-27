@@ -200,7 +200,34 @@
       </div>
       <div class="auth-error" id="login-error"></div>
       <button class="auth-btn" onclick="doLogin()">ENTER YOUR SANCTUARY ✦</button>
-      <div class="auth-switch">New here? <span onclick="showSignup()">Create your account</span></div>
+      <div class="auth-switch">Forgot your password? <span onclick="showForgot()">Reset it</span></div>
+      <div class="auth-switch" style="margin-top:10px;">New here? <span onclick="showSignup()">Create your account</span></div>
+    </div>
+    <div id="forgot-form" class="hidden">
+      <div class="auth-title">Reset your password</div>
+      <div style="font-size:13px;letter-spacing:0.05em;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.7;">Enter your email and we'll let you set a new password.</div>
+      <div class="auth-field">
+        <label class="auth-label">EMAIL</label>
+        <input class="auth-input" id="forgot-email" type="email" placeholder="your@email.com" />
+      </div>
+      <div class="auth-error" id="forgot-error"></div>
+      <button class="auth-btn" onclick="doForgotStep1()">CONTINUE ✦</button>
+      <div class="auth-switch"><span onclick="showLogin()">← Back to sign in</span></div>
+    </div>
+    <div id="reset-form" class="hidden">
+      <div class="auth-title">New password</div>
+      <div style="font-size:13px;letter-spacing:0.05em;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.7;">Choose a new password for your account.</div>
+      <div class="auth-field">
+        <label class="auth-label">NEW PASSWORD</label>
+        <input class="auth-input" id="reset-password" type="password" placeholder="Choose a password" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">CONFIRM NEW PASSWORD</label>
+        <input class="auth-input" id="reset-confirm" type="password" placeholder="Repeat your password" />
+      </div>
+      <div class="auth-error" id="reset-error"></div>
+      <button class="auth-btn" onclick="doReset()">UPDATE PASSWORD ✦</button>
+      <div class="auth-switch"><span onclick="showLogin()">← Back to sign in</span></div>
     </div>
     <div id="signup-form" class="hidden">
       <div class="auth-title">Begin your journey</div>
@@ -623,15 +650,51 @@ function makeStars(){
 const users = JSON.parse(localStorage.getItem('ss_users')||'{}');
 let currentUser = localStorage.getItem('ss_current')||null;
 
-function showSignup(){
-  document.getElementById('login-form').classList.add('hidden');
-  document.getElementById('signup-form').classList.remove('hidden');
-  document.getElementById('login-error').textContent='';
+function showForgot(){
+  ['login-form','signup-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('forgot-form').classList.remove('hidden');
+  document.getElementById('forgot-error').textContent='';
 }
 function showLogin(){
-  document.getElementById('signup-form').classList.add('hidden');
+  ['signup-form','forgot-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   document.getElementById('login-form').classList.remove('hidden');
+  document.getElementById('login-error').textContent='';
+}
+function showSignup(){
+  ['login-form','forgot-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('signup-form').classList.remove('hidden');
   document.getElementById('signup-error').textContent='';
+}
+
+let resetEmail='';
+function doForgotStep1(){
+  const email=document.getElementById('forgot-email').value.trim().toLowerCase();
+  const err=document.getElementById('forgot-error');
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';return;}
+  if(!users[email]){err.textContent='No account found with that email.';return;}
+  resetEmail=email;
+  document.getElementById('forgot-form').classList.add('hidden');
+  document.getElementById('reset-form').classList.remove('hidden');
+  document.getElementById('reset-error').textContent='';
+}
+function doReset(){
+  const pass=document.getElementById('reset-password').value;
+  const confirm=document.getElementById('reset-confirm').value;
+  const err=document.getElementById('reset-error');
+  if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
+  if(pass!==confirm){err.textContent='Passwords do not match.';return;}
+  users[resetEmail].password=pass;
+  localStorage.setItem('ss_users',JSON.stringify(users));
+  document.getElementById('reset-form').classList.add('hidden');
+  document.getElementById('login-form').classList.remove('hidden');
+  document.getElementById('login-error').textContent='';
+  document.getElementById('login-email').value=resetEmail;
+  // show success briefly
+  const success=document.createElement('div');
+  success.style.cssText='color:#7ec87e;font-size:11px;letter-spacing:0.08em;text-align:center;margin-bottom:8px;';
+  success.textContent='Password updated. Please sign in. ✦';
+  document.getElementById('login-form').insertBefore(success,document.getElementById('login-form').querySelector('.auth-field'));
+  setTimeout(()=>success.remove(),4000);
 }
 
 function doLogin(){
