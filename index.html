@@ -159,13 +159,77 @@
   .page{animation:fadeUp 0.3s ease;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .hidden{display:none;}
+
+  #auth-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto;}
+  #auth-screen > div{width:100%;max-width:380px;}
+  .auth-logo{font-family:'Josefin Sans',sans-serif;letter-spacing:0.4em;font-size:14px;color:var(--gold);font-weight:300;margin-bottom:8px;}
+  .auth-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--muted);margin-bottom:48px;text-align:center;}
+  .auth-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:30px;color:var(--gold2);margin-bottom:32px;text-align:center;}
+  .auth-field{width:100%;margin-bottom:16px;}
+  .auth-label{font-size:10px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;display:block;}
+  .auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Josefin Sans',sans-serif;font-size:14px;padding:14px 18px;outline:none;transition:border 0.2s;letter-spacing:0.04em;}
+  .auth-input:focus{border-color:rgba(201,168,76,0.5);}
+  .auth-input::placeholder{color:rgba(240,234,255,0.25);}
+  .auth-btn{width:100%;background:var(--gold);color:var(--bg);font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:0.2em;padding:16px;border:none;border-radius:10px;cursor:pointer;margin-top:8px;transition:all 0.2s;}
+  .auth-btn:hover{background:var(--gold2);}
+  .auth-switch{margin-top:24px;font-size:12px;letter-spacing:0.08em;color:var(--muted);text-align:center;}
+  .auth-switch span{color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+  .auth-error{color:#e87070;font-size:11px;letter-spacing:0.08em;margin-top:6px;min-height:16px;text-align:center;}
+  .auth-moon{font-size:48px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(201,168,76,0.3));text-align:center;}
 </style>
 </head>
 <body>
 
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div style="position:relative;z-index:1;width:100%;max-width:380px;">
+    <div style="text-align:center;margin-bottom:40px;">
+      <div class="auth-moon" id="auth-moon-emoji"></div>
+      <div class="auth-logo">SOULSET</div>
+      <div class="auth-tagline">Your daily manifestation ritual</div>
+    </div>
+    <div id="login-form">
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-field">
+        <label class="auth-label">EMAIL</label>
+        <input class="auth-input" id="login-email" type="email" placeholder="your@email.com" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">PASSWORD</label>
+        <input class="auth-input" id="login-password" type="password" placeholder="••••••••" />
+      </div>
+      <div class="auth-error" id="login-error"></div>
+      <button class="auth-btn" onclick="doLogin()">ENTER YOUR SANCTUARY ✦</button>
+      <div class="auth-switch">New here? <span onclick="showSignup()">Create your account</span></div>
+    </div>
+    <div id="signup-form" class="hidden">
+      <div class="auth-title">Begin your journey</div>
+      <div class="auth-field">
+        <label class="auth-label">YOUR NAME</label>
+        <input class="auth-input" id="signup-name" type="text" placeholder="What shall we call you?" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">EMAIL</label>
+        <input class="auth-input" id="signup-email" type="email" placeholder="your@email.com" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">PASSWORD</label>
+        <input class="auth-input" id="signup-password" type="password" placeholder="Choose a password" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">CONFIRM PASSWORD</label>
+        <input class="auth-input" id="signup-confirm" type="password" placeholder="Repeat your password" />
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <button class="auth-btn" onclick="doSignup()">START MANIFESTING ✦</button>
+      <div class="auth-switch">Already have an account? <span onclick="showLogin()">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
 <div class="stars" id="stars"></div>
 
-<div id="app">
+<div id="app" class="hidden">
   <!-- HOME PAGE -->
   <div id="page-home" class="page">
     <div class="header">
@@ -176,7 +240,7 @@
         </div>
       </div>
       <div class="greeting" id="greeting">Good evening,</div>
-      <div class="name-line">Tracie <span class="sparkle">✦</span></div>
+      <div class="name-line"><span class="user-name-display">You</span> <span class="sparkle">✦</span></div>
       <div class="date-line" id="date-line"></div>
     </div>
 
@@ -362,12 +426,13 @@
     <div class="settings-item"><span>Affirmation style</span><span class="settings-arrow">›</span></div>
     <div class="settings-item"><span>Moon reminders</span><span class="settings-arrow">›</span></div>
     <div class="settings-item" style="margin-top:8px;color:var(--gold);"><span>Upgrade to Premium ✦</span><span class="settings-arrow">›</span></div>
+    <div class="settings-item" style="margin-top:8px;color:#e87070;cursor:pointer;" onclick="doSignOut()"><span>Sign out</span><span class="settings-arrow">›</span></div>
     <div style="height:16px;"></div>
   </div>
 </div>
 
 <!-- BOTTOM NAV -->
-<nav>
+<nav id="nav-bar" class="hidden">
   <button class="active" onclick="showTab('home',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     HOME
@@ -554,6 +619,78 @@ function makeStars(){
 }
 
 // Init
+// AUTH
+const users = JSON.parse(localStorage.getItem('ss_users')||'{}');
+let currentUser = localStorage.getItem('ss_current')||null;
+
+function showSignup(){
+  document.getElementById('login-form').classList.add('hidden');
+  document.getElementById('signup-form').classList.remove('hidden');
+  document.getElementById('login-error').textContent='';
+}
+function showLogin(){
+  document.getElementById('signup-form').classList.add('hidden');
+  document.getElementById('login-form').classList.remove('hidden');
+  document.getElementById('signup-error').textContent='';
+}
+
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pass=document.getElementById('login-password').value;
+  const err=document.getElementById('login-error');
+  if(!email||!pass){err.textContent='Please enter your email and password.';return;}
+  if(!users[email]){err.textContent='No account found. Please sign up.';return;}
+  if(users[email].password!==pass){err.textContent='Incorrect password. Try again.';return;}
+  currentUser=email;
+  localStorage.setItem('ss_current',email);
+  launchApp(users[email].name);
+}
+
+function doSignup(){
+  const name=document.getElementById('signup-name').value.trim();
+  const email=document.getElementById('signup-email').value.trim().toLowerCase();
+  const pass=document.getElementById('signup-password').value;
+  const confirm=document.getElementById('signup-confirm').value;
+  const err=document.getElementById('signup-error');
+  if(!name){err.textContent='Please enter your name.';return;}
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';return;}
+  if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
+  if(pass!==confirm){err.textContent='Passwords do not match.';return;}
+  if(users[email]){err.textContent='An account with this email already exists.';return;}
+  users[email]={name,password:pass};
+  localStorage.setItem('ss_users',JSON.stringify(users));
+  currentUser=email;
+  localStorage.setItem('ss_current',email);
+  launchApp(name);
+}
+
+function launchApp(name){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('nav-bar').classList.remove('hidden');
+  // Update name displays
+  document.querySelectorAll('.user-name-display').forEach(el=>el.textContent=name);
+  document.querySelector('.profile-name').textContent=name;
+  document.querySelector('.profile-avatar').textContent=name.charAt(0).toUpperCase();
+  init();
+}
+
+function doSignOut(){
+  localStorage.removeItem('ss_current');
+  location.reload();
+}
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded',()=>{
+  // set moon on auth screen
+  const moon=getMoonPhase(new Date());
+  const el=document.getElementById('auth-moon-emoji');
+  if(el)el.textContent=moon.emoji;
+  if(currentUser&&users[currentUser]){
+    launchApp(users[currentUser].name);
+  }
+});
+
 function init(){
   makeStars();
   const now = new Date();
