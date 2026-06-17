@@ -161,10 +161,70 @@ h2.sec{font-family:var(--serif);font-size:1.5rem;font-weight:500;margin:.2rem 0 
 .dot.on{background:var(--gold);opacity:1;width:20px}
 small.fine{display:block;color:var(--faint);font-size:.72rem;text-align:center;margin-top:.9rem;line-height:1.5}
 .link{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+
+/* ============ DESKTOP LANDING (wide screens only; phone app untouched) ============ */
+.deskhero{display:none}
+@media (min-width:900px) and (pointer:fine){
+  body{overflow:auto}
+  /* present the live app inside a phone mockup, centred */
+  .app{
+    width:402px;max-width:none;height:min(858px,92vh);margin:4vh auto;
+    border-radius:52px;overflow:hidden;position:relative;
+    border:13px solid #241526;
+    box-shadow:0 50px 110px -34px rgba(78,48,104,.65),0 0 0 2px rgba(255,255,255,.05) inset,0 2px 6px rgba(0,0,0,.4);
+  }
+  /* nav now anchors to the phone, not the viewport */
+  .nav{position:absolute;max-width:none;left:0;right:0;bottom:0;margin:0;padding:.5rem .5rem .7rem}
+  .scroll{padding-bottom:6rem}
+  /* onboarding shown as the same phone */
+  .onb{
+    inset:auto;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:402px;height:min(858px,92vh);overflow-y:auto;
+    border-radius:52px;border:13px solid #241526;padding:2rem 1.5rem;
+    box-shadow:0 50px 110px -34px rgba(78,48,104,.65),0 0 0 2px rgba(255,255,255,.05) inset;
+  }
+  /* paywall / sheets become a centred modal */
+  .overlay{align-items:center}
+  .sheet{max-width:430px;max-height:84vh;border-radius:28px;padding-bottom:1.5rem}
+  /* marketing hero to the left of the phone */
+  .deskhero{
+    display:flex;flex-direction:column;justify-content:center;
+    position:fixed;left:0;top:0;bottom:0;z-index:2;
+    width:min(46vw,560px);padding:0 clamp(2.5rem,5vw,6rem);
+  }
+  .deskhero .dh-brand{font-family:var(--serif);font-size:1.5rem;font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:var(--ink);margin-bottom:1.6rem}
+  .deskhero .dh-brand .sp{color:var(--gold)}
+  .deskhero h1{font-family:var(--serif);font-weight:500;font-size:clamp(2.4rem,3.6vw,3.6rem);line-height:1.08;margin:0 0 1.1rem;color:var(--ink)}
+  .deskhero p.lead{font-size:1.08rem;line-height:1.6;color:var(--muted);margin:0 0 1.8rem;max-width:30ch}
+  .deskhero ul{list-style:none;padding:0;margin:0 0 2rem;display:flex;flex-direction:column;gap:.85rem}
+  .deskhero li{display:flex;align-items:center;gap:.7rem;font-size:1rem;color:var(--ink)}
+  .deskhero li .ic{flex:none;width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(233,201,135,.18);color:var(--gold);font-size:.95rem}
+  .deskhero .dh-install{font-size:.92rem;color:var(--muted);line-height:1.55;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:.9rem 1.05rem;backdrop-filter:blur(10px);max-width:34ch}
+  .deskhero .dh-install b{color:var(--ink)}
+  /* hide hero on mid-width desktops where it would crowd the phone */
+  @media (max-width:1099px){ .deskhero{display:none} }
+}
+@media (min-width:900px) and (max-width:1099px) and (pointer:fine){
+  .app{margin:4vh auto}
+}
 </style>
 </head>
 <body>
 <canvas id="stars"></canvas>
+
+<!-- DESKTOP MARKETING HERO (wide screens only) -->
+<aside class="deskhero" aria-hidden="true">
+  <div class="dh-brand">Soul<span class="sp">✦</span>set</div>
+  <h1>Your daily gratitude &amp; wellbeing ritual.</h1>
+  <p class="lead">Reflect, give thanks, build calm habits, and manifest the life you want, one gentle moment a day.</p>
+  <ul>
+    <li><span class="ic">✦</span> Daily affirmations &amp; reflection</li>
+    <li><span class="ic">♡</span> Gratitude journal &amp; mood tracking</li>
+    <li><span class="ic">☾</span> Moon cycles &amp; a vision board</li>
+    <li><span class="ic">◷</span> Gentle daily reminders</li>
+  </ul>
+  <div class="dh-install"><b>Use it like an app:</b> open soulsetapp.co.uk on your phone, tap Share, then <b>Add to Home Screen</b>.</div>
+</aside>
 
 <!-- ONBOARDING -->
 <div class="onb" id="onb">
