@@ -1,0 +1,17 @@
+{
+  "name": "Soulset — Gratitude & Wellbeing",
+  "short_name": "Soulset",
+  "description": "Your daily gratitude & wellbeing ritual. Reflect, give thanks, build calm habits and manifest the life you want.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf5ef",
+  "theme_color": "#fbf5ef",
+  "categories": ["lifestyle", "health", "wellness"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

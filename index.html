@@ -1,984 +1,576 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#fbf5ef" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Soulset" />
+<meta name="description" content="Soulset — your daily gratitude & wellbeing ritual. Reflect, give thanks, build calm habits and manifest the life you want." />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <title>Soulset</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Josefin+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;}
-  :root{
-    --bg:#0a0818;
-    --bg2:#110e24;
-    --bg3:#1a1535;
-    --gold:#c9a84c;
-    --gold2:#e8c96d;
-    --text:#f0eaff;
-    --muted:rgba(240,234,255,0.5);
-    --border:rgba(201,168,76,0.18);
-    --border2:rgba(255,255,255,0.08);
-    --radius:14px;
-  }
-  body{background:var(--bg);color:var(--text);font-family:'Josefin Sans',sans-serif;min-height:100vh;max-width:480px;margin:0 auto;position:relative;overflow-x:hidden;}
-  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-  .star{position:absolute;width:2px;height:2px;background:rgba(255,255,255,0.4);border-radius:50%;}
-  #app{position:relative;z-index:1;padding-bottom:90px;}
+:root{
+  --bg:#fbf5ef; --bg2:#f5ecf5; --bg3:#efe3f1;
+  --ink:#3f2a45; --muted:#8a7493; --faint:#b6a6bf;
+  --gold:#bd8a47; --gold2:#e7c486; --rose:#e3a9bf; --violet:#9b82d8;
+  --line:rgba(123,90,140,.18); --card:rgba(255,255,255,.62); --card2:rgba(255,255,255,.82);
+  --soft:rgba(123,90,140,.07);
+  --ok:#3fae86; --shadow:0 20px 50px -26px rgba(120,80,140,.45);
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{
+  font-family:var(--sans);color:var(--ink);
+  background:radial-gradient(1100px 700px at 82% -8%,#f7dfe8 0%,transparent 60%),
+             radial-gradient(950px 620px at -12% 108%,#e6dcf7 0%,transparent 56%),
+             radial-gradient(700px 500px at 50% 50%,#fdf6f0 0%,transparent 70%),
+             linear-gradient(180deg,#fbf5ef 0%,#f1e7f3 100%);
+  background-attachment:fixed;overflow:hidden;
+}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55}
+.app{position:relative;z-index:1;max-width:540px;margin:0 auto;height:100dvh;display:flex;flex-direction:column}
 
-  /* NAV */
-  nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,8,24,0.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:12px 0 20px;z-index:100;}
-  nav button{background:none;border:none;color:var(--muted);font-family:'Josefin Sans',sans-serif;font-size:10px;letter-spacing:0.12em;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:color 0.2s;padding:0 8px;}
-  nav button.active{color:var(--gold);}
-  nav button svg{width:20px;height:20px;opacity:0.7;}
-  nav button.active svg{opacity:1;}
+/* generic */
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.95rem 1.2rem;border-radius:16px;font-weight:500;font-size:.95rem;transition:transform .15s ease,box-shadow .25s ease,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);color:#2a1c05;box-shadow:0 12px 30px -12px rgba(233,201,135,.7);font-weight:600;letter-spacing:.02em}
+.btn-ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
+.btn-block{width:100%}
+.sp{color:var(--gold)}
+.serif{font-family:var(--serif)}
+input,textarea{font-family:inherit;width:100%;color:var(--ink);background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:.85rem 1rem;font-size:1rem;outline:none;transition:border .2s,background .2s}
+input:focus,textarea:focus{border-color:rgba(189,138,71,.55);background:#fff}
+textarea{resize:none;line-height:1.5}
+::placeholder{color:var(--faint)}
+.label{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:0 0 .55rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:1.25rem;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+.muted{color:var(--muted)}
+.center{text-align:center}
 
-  /* HEADER */
-  .header{padding:60px 24px 0;background:linear-gradient(180deg,rgba(106,71,173,0.08) 0%,transparent 100%);}
-  .logo{font-family:'Josefin Sans',sans-serif;letter-spacing:0.35em;font-size:13px;color:var(--gold);font-weight:300;margin-bottom:32px;display:flex;justify-content:space-between;align-items:center;}
-  .logo-actions{display:flex;gap:12px;align-items:center;}
-  .premium-btn{border:1px solid var(--gold);color:var(--gold);background:transparent;font-family:'Josefin Sans',sans-serif;font-size:10px;letter-spacing:0.15em;padding:6px 14px;cursor:pointer;border-radius:20px;transition:all 0.2s;}
-  .premium-btn:hover{background:var(--gold);color:var(--bg);}
-  .greeting{font-size:22px;font-weight:300;letter-spacing:0.02em;color:rgba(240,234,255,0.8);margin-bottom:4px;}
-  .name-line{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:38px;color:var(--gold2);margin-bottom:8px;}
-  .date-line{font-size:11px;letter-spacing:0.2em;color:var(--muted);margin-bottom:28px;}
-  .sparkle{display:inline-block;animation:spin 4s linear infinite;font-size:22px;}
-  @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--safe-t) + .9rem) 1.25rem .6rem}
+.brand{font-family:var(--serif);font-size:1.35rem;font-weight:600;letter-spacing:.32em;text-transform:uppercase}
+.brand .sp{margin-left:.15em}
+.premchip{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:.4rem .7rem;border-radius:999px;border:1px solid var(--line);color:var(--gold);background:rgba(233,201,135,.08)}
+.premchip.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c05;border:none}
 
-  /* CARDS */
-  .card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:0 16px 16px;}
-  .card-sm{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;}
-  .section-label{font-size:10px;letter-spacing:0.2em;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-  .section-label::before{content:'';display:inline-block;width:4px;height:4px;background:var(--gold);border-radius:50%;}
+/* screens */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:.25rem 1.25rem 7rem;scrollbar-width:none}
+.scroll::-webkit-scrollbar{display:none}
+.screen{display:none;animation:fade .45s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hello{font-family:var(--serif);font-size:2rem;font-weight:500;line-height:1.15;margin:.4rem 0 .15rem}
+.subtle{color:var(--muted);font-size:.92rem;margin:0 0 1.1rem}
+h2.sec{font-family:var(--serif);font-size:1.5rem;font-weight:500;margin:.2rem 0 .1rem}
+.sec-sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
 
-  /* MOON CARD */
-  .moon-card{display:flex;align-items:center;gap:16px;}
-  .moon-emoji{font-size:32px;}
-  .moon-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold2);}
-  .moon-sub{font-size:11px;letter-spacing:0.1em;color:var(--muted);margin-top:2px;}
-  .moon-dots{display:flex;gap:4px;margin-left:auto;}
-  .moon-dot{width:8px;height:8px;border-radius:50%;background:rgba(201,168,76,0.3);}
-  .moon-dot.lit{background:var(--gold);}
+/* streak */
+.streakrow{display:flex;gap:.7rem;margin-bottom:1.1rem}
+.stat{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:.9rem;text-align:center}
+.stat b{font-family:var(--serif);font-size:1.7rem;font-weight:600;display:block;line-height:1;color:var(--gold)}
+.stat span{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
 
-  /* PROMPTS */
-  .prompt-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;line-height:1.5;color:var(--text);margin-bottom:16px;}
-  textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Josefin Sans',sans-serif;font-size:14px;padding:14px;resize:none;min-height:100px;outline:none;transition:border 0.2s;letter-spacing:0.03em;}
-  textarea:focus{border-color:rgba(201,168,76,0.4);}
-  textarea::placeholder{color:var(--muted);}
-  .save-btn{background:var(--gold);color:var(--bg);font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:0.18em;padding:13px 24px;border:none;border-radius:8px;cursor:pointer;margin-top:14px;display:inline-flex;align-items:center;gap:8px;transition:all 0.2s;font-weight:400;}
-  .save-btn:hover{background:var(--gold2);}
-  .save-btn.saved{background:rgba(201,168,76,0.2);color:var(--gold);border:1px solid var(--border);}
+/* affirmation hero */
+.hero{background:linear-gradient(150deg,rgba(227,169,191,.34),rgba(155,130,224,.20));border:1px solid var(--line);border-radius:24px;padding:1.6rem 1.4rem;text-align:center;position:relative;overflow:hidden;margin-bottom:1.1rem}
+.hero:before{content:"✦";position:absolute;font-size:7rem;color:rgba(233,201,135,.07);top:-1.5rem;right:-1rem}
+.hero .q{font-family:var(--serif);font-size:1.55rem;font-weight:500;line-height:1.3;font-style:italic}
+.hero .tag{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
 
-  /* AFFIRMATION */
-  .affirmation-text{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;line-height:1.4;color:var(--gold2);text-align:center;padding:8px 0;}
+/* mood */
+.moodrow{display:flex;justify-content:space-between;gap:.4rem;margin-top:.8rem}
+.mood{flex:1;aspect-ratio:1;border-radius:16px;background:var(--card2);border:1px solid var(--line);font-size:1.5rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.mood.sel{background:linear-gradient(135deg,rgba(233,201,135,.3),rgba(230,166,199,.25));border-color:var(--gold);transform:translateY(-3px)}
 
-  /* MOOD */
-  .mood-row{display:flex;justify-content:space-between;gap:8px;}
-  .mood-btn{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;padding:12px 4px;cursor:pointer;font-size:20px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;}
-  .mood-btn:hover{border-color:rgba(201,168,76,0.4);transform:scale(1.05);}
-  .mood-btn.selected{background:rgba(201,168,76,0.15);border-color:var(--gold);}
+/* lists / items */
+.item{display:flex;align-items:center;gap:.85rem;padding:.95rem 1rem;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:.7rem;transition:.2s}
+.check{width:26px;height:26px;border-radius:9px;border:1.5px solid var(--faint);flex:0 0 auto;display:flex;align-items:center;justify-content:center;transition:.2s}
+.item.done .check{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:#2a1c05}
+.item.done .it-name{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(233,201,135,.5)}
+.it-name{flex:1;font-size:.98rem}
+.it-sub{font-size:.74rem;color:var(--faint)}
+.add{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.95rem;border:1.5px dashed var(--line);border-radius:16px;color:var(--gold);font-weight:500;background:rgba(233,201,135,.04)}
 
-  /* HABITS */
-  .page-header{padding:60px 24px 24px;background:linear-gradient(180deg,rgba(106,71,173,0.08) 0%,transparent 100%);}
-  .page-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;color:var(--gold2);margin-top:8px;}
-  .page-sub{font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-top:4px;}
-  .habit-item{display:flex;align-items:center;gap:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;margin:0 16px 10px;cursor:pointer;transition:all 0.2s;}
-  .habit-item:hover{border-color:var(--border);}
-  .habit-item.done{border-color:rgba(201,168,76,0.35);background:rgba(201,168,76,0.06);}
-  .habit-check{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(201,168,76,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
-  .habit-item.done .habit-check{background:var(--gold);border-color:var(--gold);}
-  .habit-emoji{font-size:18px;width:28px;text-align:center;}
-  .habit-name{font-size:14px;letter-spacing:0.05em;flex:1;}
-  .habit-item.done .habit-name{color:var(--muted);text-decoration:line-through;}
-  .streak-badge{font-size:10px;letter-spacing:0.1em;color:var(--gold);background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);padding:3px 8px;border-radius:20px;}
-  .add-habit-form{margin:0 16px;display:flex;gap:10px;}
-  .add-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Josefin Sans',sans-serif;font-size:13px;padding:12px 16px;outline:none;letter-spacing:0.03em;}
-  .add-input:focus{border-color:rgba(201,168,76,0.4);}
-  .add-input::placeholder{color:var(--muted);}
-  .add-btn{background:rgba(201,168,76,0.15);border:1px solid var(--border);color:var(--gold);font-family:'Josefin Sans',sans-serif;font-size:20px;padding:0 18px;border-radius:10px;cursor:pointer;transition:all 0.2s;}
-  .add-btn:hover{background:var(--gold);color:var(--bg);}
-  .progress-bar-wrap{margin:16px 16px 24px;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
-  .progress-bar{height:100%;background:linear-gradient(90deg,rgba(201,168,76,0.6),var(--gold));border-radius:2px;transition:width 0.4s ease;}
+/* vision chips */
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.chip{padding:.5rem .85rem;border-radius:999px;border:1px solid var(--line);font-size:.8rem;color:var(--muted);background:var(--card2)}
+.chip.sel{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c05;border:none;font-weight:600}
+.vision{background:linear-gradient(150deg,rgba(157,139,224,.16),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:18px;padding:1rem 1.1rem;margin-bottom:.7rem}
+.vision .cat{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.vision p{margin:.25rem 0 0;font-family:var(--serif);font-size:1.15rem;line-height:1.35}
 
-  /* GRATITUDE */
-  .gratitude-item{margin:0 16px 12px;}
-  .gratitude-num{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--gold);margin-bottom:6px;letter-spacing:0.05em;}
-  .gratitude-saved{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:14px;letter-spacing:0.04em;line-height:1.6;color:var(--text);}
-  .past-entry{margin:0 16px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px;}
-  .past-date{font-size:10px;letter-spacing:0.15em;color:var(--gold);margin-bottom:10px;}
-  .past-item{font-size:13px;color:rgba(240,234,255,0.7);margin-bottom:6px;padding-left:10px;border-left:1px solid var(--border);}
+/* moon */
+.moondisc{width:140px;height:140px;border-radius:50%;margin:.5rem auto 1rem;background:radial-gradient(circle at 35% 30%,#fff8e7,#d9c79a 60%,#8a7bbf 100%);box-shadow:0 0 60px -8px rgba(244,221,168,.55),inset -22px -10px 40px rgba(11,7,32,.85);position:relative}
 
-  /* VISION */
-  .goal-item{margin:0 16px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
-  .goal-item:hover{border-color:var(--border);}
-  .goal-item.done{opacity:0.5;}
-  .goal-check{width:22px;height:22px;border-radius:50%;border:1.5px solid rgba(201,168,76,0.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
-  .goal-item.done .goal-check{background:var(--gold);border-color:var(--gold);}
-  .goal-text{flex:1;font-size:14px;letter-spacing:0.03em;}
-  .goal-item.done .goal-text{text-decoration:line-through;color:var(--muted);}
-  .goal-cat{font-size:10px;letter-spacing:0.12em;color:var(--gold);background:rgba(201,168,76,0.1);padding:3px 8px;border-radius:20px;border:1px solid rgba(201,168,76,0.15);}
-  .cat-select{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Josefin Sans',sans-serif;font-size:13px;padding:12px 16px;outline:none;width:120px;cursor:pointer;}
-  .cat-select:focus{border-color:rgba(201,168,76,0.4);}
-  option{background:var(--bg2);}
+/* gratitude saved */
+.saved-tag{display:inline-flex;align-items:center;gap:.4rem;color:var(--ok);font-size:.78rem;font-weight:500;margin-top:.6rem}
+.entry{border-left:2px solid var(--line);padding:.2rem 0 .2rem 1rem;margin:0 0 1rem}
+.entry .d{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.entry p{margin:.2rem 0;font-size:.95rem;color:var(--muted)}
 
-  /* MOON PAGE */
-  .moon-phase-display{text-align:center;padding:32px 24px;}
-  .big-moon{font-size:96px;display:block;margin-bottom:16px;filter:drop-shadow(0 0 30px rgba(201,168,76,0.3));}
-  .moon-phase-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:36px;color:var(--gold2);margin-bottom:8px;}
-  .moon-cycle-bar{margin:16px 24px;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
-  .moon-cycle-fill{height:100%;background:linear-gradient(90deg,rgba(201,168,76,0.3),var(--gold2));border-radius:3px;}
-  .ritual-card{margin:0 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
-  .ritual-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;color:var(--gold2);margin-bottom:14px;}
-  .ritual-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
-  .ritual-num{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold);flex-shrink:0;margin-top:2px;}
-  .ritual-text{font-size:13px;letter-spacing:0.04em;line-height:1.7;color:rgba(240,234,255,0.8);}
+/* bottom nav */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:5;display:flex;justify-content:space-around;max-width:540px;margin:0 auto;padding:.5rem .5rem calc(.5rem + var(--safe-b));background:rgba(255,250,245,.85);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.navb{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.45rem 0;color:var(--faint);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;transition:.2s}
+.navb svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
+.navb.active{color:var(--gold)}
+.navb.active svg{filter:drop-shadow(0 0 8px rgba(233,201,135,.6))}
 
-  /* ME PAGE */
-  .profile-header{text-align:center;padding:48px 24px 24px;}
-  .profile-avatar{width:80px;height:80px;border-radius:50%;border:2px solid var(--gold);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;color:var(--gold2);background:rgba(201,168,76,0.1);}
-  .profile-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:28px;color:var(--gold2);}
-  .profile-tagline{font-size:11px;letter-spacing:0.15em;color:var(--muted);margin-top:4px;}
-  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 16px 16px;}
-  .stat-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:18px;text-align:center;}
-  .stat-num{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--gold2);}
-  .stat-label{font-size:10px;letter-spacing:0.15em;color:var(--muted);margin-top:4px;}
-  .settings-item{margin:0 16px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;font-size:13px;letter-spacing:0.05em;}
-  .settings-arrow{color:var(--gold);font-size:16px;}
+/* premium lock */
+.locked{position:relative}
+.lockcard{text-align:center;padding:2rem 1.4rem;background:linear-gradient(150deg,rgba(157,139,224,.18),rgba(230,166,199,.1));border:1px solid var(--line);border-radius:24px}
+.lockcard .ic{font-size:2rem}
 
-  /* SAVED STATE */
-  .saved-entry{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:14px;font-size:14px;letter-spacing:0.03em;line-height:1.7;color:rgba(240,234,255,0.9);}
-  .saved-tick{display:inline-block;background:var(--gold);color:var(--bg);width:18px;height:18px;border-radius:50%;font-size:10px;text-align:center;line-height:18px;margin-right:8px;vertical-align:middle;}
+/* overlay / modal */
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(7,5,18,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex;animation:fade .3s}
+.sheet{width:100%;max-width:540px;max-height:92dvh;overflow-y:auto;background:linear-gradient(180deg,#fffaf6,#f5ecf4);border:1px solid var(--line);border-radius:28px 28px 0 0;padding:1.5rem 1.25rem calc(1.5rem + var(--safe-b));box-shadow:0 -20px 60px rgba(90,60,110,.25);animation:up .35s cubic-bezier(.2,.9,.3,1)}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:40px;height:4px;border-radius:99px;background:var(--faint);margin:0 auto 1.2rem;opacity:.5}
+.x{position:absolute;top:1rem;right:1.1rem;font-size:1.4rem;color:var(--faint)}
 
-  /* DIVIDER */
-  .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,0.15),transparent);margin:4px 16px 16px;}
+/* plans */
+.plan{position:relative;border:1.5px solid var(--line);border-radius:20px;padding:1.1rem 1.2rem;margin-bottom:.8rem;background:var(--card2);transition:.2s;display:flex;align-items:center;justify-content:space-between}
+.plan.best{border-color:var(--gold);background:linear-gradient(135deg,rgba(233,201,135,.12),rgba(255,255,255,.03))}
+.plan .pname{font-weight:600;font-size:1rem}
+.plan .pmeta{font-size:.78rem;color:var(--muted)}
+.plan .price{font-family:var(--serif);font-size:1.5rem;font-weight:600;color:var(--gold);text-align:right;line-height:1}
+.plan .per{font-size:.66rem;color:var(--faint);display:block}
+.ribbon{position:absolute;top:-10px;right:14px;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c05;padding:.25rem .6rem;border-radius:999px}
+.feat{display:flex;gap:.7rem;align-items:flex-start;margin:.55rem 0;font-size:.92rem;color:var(--muted)}
+.feat .t{color:var(--gold);flex:0 0 auto}
 
-  /* SCROLL */
-  ::-webkit-scrollbar{width:4px;}
-  ::-webkit-scrollbar-track{background:transparent;}
-  ::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.2);border-radius:2px;}
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(5.5rem + var(--safe-b));transform:translateX(-50%) translateY(20px);background:rgba(255,252,248,.97);border:1px solid var(--line);color:var(--ink);padding:.7rem 1.1rem;border-radius:14px;font-size:.85rem;z-index:40;opacity:0;transition:.3s;pointer-events:none;box-shadow:var(--shadow)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-  /* FADE IN */
-  .page{animation:fadeUp 0.3s ease;}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .hidden{display:none;}
-
-  #auth-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto;}
-  #auth-screen > div{width:100%;max-width:380px;}
-  .auth-logo{font-family:'Josefin Sans',sans-serif;letter-spacing:0.4em;font-size:14px;color:var(--gold);font-weight:300;margin-bottom:8px;}
-  .auth-tagline{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--muted);margin-bottom:48px;text-align:center;}
-  .auth-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:30px;color:var(--gold2);margin-bottom:32px;text-align:center;}
-  .auth-field{width:100%;margin-bottom:16px;}
-  .auth-label{font-size:10px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;display:block;}
-  .auth-input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Josefin Sans',sans-serif;font-size:14px;padding:14px 18px;outline:none;transition:border 0.2s;letter-spacing:0.04em;}
-  .auth-input:focus{border-color:rgba(201,168,76,0.5);}
-  .auth-input::placeholder{color:rgba(240,234,255,0.25);}
-  .auth-btn{width:100%;background:var(--gold);color:var(--bg);font-family:'Josefin Sans',sans-serif;font-size:11px;letter-spacing:0.2em;padding:16px;border:none;border-radius:10px;cursor:pointer;margin-top:8px;transition:all 0.2s;}
-  .auth-btn:hover{background:var(--gold2);}
-  .auth-switch{margin-top:24px;font-size:12px;letter-spacing:0.08em;color:var(--muted);text-align:center;}
-  .auth-switch span{color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-  .auth-error{color:#e87070;font-size:11px;letter-spacing:0.08em;margin-top:6px;min-height:16px;text-align:center;}
-  .auth-moon{font-size:48px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(201,168,76,0.3));text-align:center;}
+/* onboarding */
+.onb{position:fixed;inset:0;z-index:30;display:none;flex-direction:column;justify-content:center;padding:2rem 1.6rem calc(2rem + var(--safe-b));background:radial-gradient(900px 620px at 50% 4%,#f7dfe8,transparent),radial-gradient(700px 500px at 50% 100%,#e7ddf7,transparent),linear-gradient(180deg,#fdf6f0,#f2e8f4)}
+.onb.open{display:flex;animation:fade .5s}
+.onb .big{font-family:var(--serif);font-size:2.6rem;font-weight:500;line-height:1.1;margin:.4rem 0}
+.dots{display:flex;gap:.4rem;justify-content:center;margin:1.4rem 0}
+.dot{width:7px;height:7px;border-radius:99px;background:var(--faint);opacity:.4}
+.dot.on{background:var(--gold);opacity:1;width:20px}
+small.fine{display:block;color:var(--faint);font-size:.72rem;text-align:center;margin-top:.9rem;line-height:1.5}
+.link{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
+<canvas id="stars"></canvas>
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen">
-  <div style="position:relative;z-index:1;width:100%;max-width:380px;">
-    <div style="text-align:center;margin-bottom:40px;">
-      <div class="auth-moon" id="auth-moon-emoji"></div>
-      <div class="auth-logo">SOULSET</div>
-      <div class="auth-tagline">Your daily manifestation ritual</div>
-    </div>
-    <div id="login-form">
-      <div class="auth-title">Welcome back</div>
-      <div class="auth-field">
-        <label class="auth-label">EMAIL</label>
-        <input class="auth-input" id="login-email" type="email" placeholder="your@email.com" />
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">PASSWORD</label>
-        <input class="auth-input" id="login-password" type="password" placeholder="••••••••" />
-      </div>
-      <div class="auth-error" id="login-error"></div>
-      <button class="auth-btn" onclick="doLogin()">ENTER YOUR SANCTUARY ✦</button>
-      <div class="auth-switch">Forgot your password? <span onclick="showForgot()">Reset it</span></div>
-      <div class="auth-switch" style="margin-top:10px;">New here? <span onclick="showSignup()">Create your account</span></div>
-    </div>
-    <div id="forgot-form" class="hidden">
-      <div class="auth-title">Reset your password</div>
-      <div style="font-size:13px;letter-spacing:0.05em;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.7;">Enter your email and we'll let you set a new password.</div>
-      <div class="auth-field">
-        <label class="auth-label">EMAIL</label>
-        <input class="auth-input" id="forgot-email" type="email" placeholder="your@email.com" />
-      </div>
-      <div class="auth-error" id="forgot-error"></div>
-      <button class="auth-btn" onclick="doForgotStep1()">CONTINUE ✦</button>
-      <div class="auth-switch"><span onclick="showLogin()">← Back to sign in</span></div>
-    </div>
-    <div id="reset-form" class="hidden">
-      <div class="auth-title">New password</div>
-      <div style="font-size:13px;letter-spacing:0.05em;color:var(--muted);text-align:center;margin-bottom:24px;line-height:1.7;">Choose a new password for your account.</div>
-      <div class="auth-field">
-        <label class="auth-label">NEW PASSWORD</label>
-        <input class="auth-input" id="reset-password" type="password" placeholder="Choose a password" />
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">CONFIRM NEW PASSWORD</label>
-        <input class="auth-input" id="reset-confirm" type="password" placeholder="Repeat your password" />
-      </div>
-      <div class="auth-error" id="reset-error"></div>
-      <button class="auth-btn" onclick="doReset()">UPDATE PASSWORD ✦</button>
-      <div class="auth-switch"><span onclick="showLogin()">← Back to sign in</span></div>
-    </div>
-    <div id="signup-form" class="hidden">
-      <div class="auth-title">Begin your journey</div>
-      <div class="auth-field">
-        <label class="auth-label">YOUR NAME</label>
-        <input class="auth-input" id="signup-name" type="text" placeholder="What shall we call you?" />
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">EMAIL</label>
-        <input class="auth-input" id="signup-email" type="email" placeholder="your@email.com" />
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">PASSWORD</label>
-        <input class="auth-input" id="signup-password" type="password" placeholder="Choose a password" />
-      </div>
-      <div class="auth-field">
-        <label class="auth-label">CONFIRM PASSWORD</label>
-        <input class="auth-input" id="signup-confirm" type="password" placeholder="Repeat your password" />
-      </div>
-      <div class="auth-error" id="signup-error"></div>
-      <button class="auth-btn" onclick="doSignup()">START MANIFESTING ✦</button>
-      <div class="auth-switch">Already have an account? <span onclick="showLogin()">Sign in</span></div>
-    </div>
-  </div>
+<!-- ONBOARDING -->
+<div class="onb" id="onb">
+  <div id="onbBody"></div>
 </div>
 
-<div class="stars" id="stars"></div>
-
-<div id="app" class="hidden">
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page">
-    <div class="header">
-      <div class="logo">
-        SOULSET
-        <div class="logo-actions">
-          <button class="premium-btn">✦ GO PREMIUM</button>
-        </div>
-      </div>
-      <div class="greeting" id="greeting">Good evening,</div>
-      <div class="name-line"><span class="user-name-display">You</span> <span class="sparkle">✦</span></div>
-      <div class="date-line" id="date-line"></div>
-    </div>
-
-    <!-- Moon Card -->
-    <div class="card">
-      <div class="moon-card">
-        <span class="moon-emoji" id="home-moon-emoji"></span>
-        <div>
-          <div class="moon-name" id="home-moon-name"></div>
-          <div class="moon-sub">Tap Moon tab for today's ritual</div>
-        </div>
-        <div class="moon-dots" id="moon-dots"></div>
-      </div>
-    </div>
-
-    <!-- Daily Reflection -->
-    <div class="section-label" style="padding:0 16px;">TODAY'S MANIFESTATION PROMPT</div>
-    <div class="card">
-      <div class="section-label">✦ DAILY REFLECTION</div>
-      <div class="prompt-text" id="prompt-text"></div>
-      <div id="journal-area">
-        <textarea id="journal-input" placeholder="Write your truth here..." rows="4"></textarea>
-        <button class="save-btn" onclick="saveJournal()" id="journal-btn">SAVE REFLECTION ✦</button>
-      </div>
-      <div id="journal-saved" class="hidden">
-        <div class="saved-entry" id="journal-saved-text"></div>
-        <button class="save-btn saved" onclick="editJournal()" style="margin-top:12px;">EDIT ✦</button>
-      </div>
-    </div>
-
-    <!-- Daily Affirmation -->
-    <div class="section-label" style="padding:0 16px;">DAILY AFFIRMATION</div>
-    <div class="card" style="text-align:center;">
-      <div class="affirmation-text" id="affirmation-text"></div>
-    </div>
-
-    <!-- Mood -->
-    <div class="section-label" style="padding:0 16px;">HOW ARE YOU FEELING?</div>
-    <div class="card">
-      <div class="mood-row" id="mood-row"></div>
-      <div id="mood-saved-msg" class="hidden" style="text-align:center;margin-top:14px;font-size:12px;letter-spacing:0.1em;color:var(--muted);">Mood captured ✦</div>
-    </div>
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <div class="topbar">
+    <div class="brand">Soul<span class="sp">✦</span>set</div>
+    <button class="premchip" id="premChip" onclick="openPaywall()">✦ Go Premium</button>
   </div>
 
-  <!-- HABITS PAGE -->
-  <div id="page-habits" class="page hidden">
-    <div class="page-header">
-      <div class="logo" style="margin-bottom:16px;">SOULSET</div>
-      <div class="section-label" style="padding:0;">DAILY RITUALS</div>
-      <div class="page-title">Your Habits</div>
-      <div class="page-sub" id="habits-progress-text"></div>
-    </div>
-    <div class="progress-bar-wrap"><div class="progress-bar" id="habits-progress-bar"></div></div>
-    <div id="habits-list"></div>
-    <div style="margin:20px 16px 12px;"><div class="section-label" style="padding:0;">ADD NEW HABIT</div></div>
-    <div class="add-habit-form">
-      <input class="add-input" id="new-habit-input" placeholder="New ritual..." />
-      <button class="add-btn" onclick="addHabit()">+</button>
-    </div>
+  <div class="scroll" id="scroll">
+    <!-- TODAY -->
+    <section class="screen active" id="s-today"></section>
+    <!-- GRATITUDE -->
+    <section class="screen" id="s-gratitude"></section>
+    <!-- HABITS -->
+    <section class="screen" id="s-habits"></section>
+    <!-- VISION -->
+    <section class="screen" id="s-vision"></section>
+    <!-- MOON -->
+    <section class="screen" id="s-moon"></section>
+    <!-- ME -->
+    <section class="screen" id="s-me"></section>
   </div>
 
-  <!-- GRATITUDE PAGE -->
-  <div id="page-gratitude" class="page hidden">
-    <div class="page-header">
-      <div class="logo" style="margin-bottom:16px;">SOULSET</div>
-      <div class="section-label" style="padding:0;">DAILY PRACTICE</div>
-      <div class="page-title">Gratitude Log</div>
-      <div class="page-sub">Three things you're grateful for today</div>
-    </div>
-
-    <div id="gratitude-form">
-      <div class="gratitude-item">
-        <div class="gratitude-num">One</div>
-        <textarea id="grat-1" placeholder="I am grateful for..." rows="2"></textarea>
-      </div>
-      <div class="gratitude-item">
-        <div class="gratitude-num">Two</div>
-        <textarea id="grat-2" placeholder="I am grateful for..." rows="2"></textarea>
-      </div>
-      <div class="gratitude-item">
-        <div class="gratitude-num">Three</div>
-        <textarea id="grat-3" placeholder="I am grateful for..." rows="2"></textarea>
-      </div>
-      <div style="padding:0 16px;">
-        <button class="save-btn" onclick="saveGratitude()" style="width:100%;justify-content:center;">SAVE TODAY'S GRATITUDE ✦</button>
-      </div>
-    </div>
-
-    <div id="gratitude-saved-view" class="hidden" style="padding:0 0 16px;">
-      <div class="card">
-        <div class="section-label">✦ TODAY SAVED</div>
-        <div id="grat-saved-items"></div>
-        <button class="save-btn saved" onclick="editGratitude()" style="margin-top:8px;">EDIT ✦</button>
-      </div>
-    </div>
-
-    <div id="past-gratitude"></div>
-  </div>
-
-  <!-- VISION PAGE -->
-  <div id="page-vision" class="page hidden">
-    <div class="page-header">
-      <div class="logo" style="margin-bottom:16px;">SOULSET</div>
-      <div class="section-label" style="padding:0;">MANIFESTING</div>
-      <div class="page-title">Vision Board</div>
-      <div class="page-sub">What you are calling into existence</div>
-    </div>
-
-    <div id="goals-list"></div>
-
-    <div style="margin:20px 16px 12px;"><div class="section-label" style="padding:0;">ADD NEW INTENTION</div></div>
-    <div class="add-habit-form" style="flex-wrap:wrap;gap:10px;">
-      <input class="add-input" id="new-goal-input" placeholder="What are you calling in?" style="flex:1;min-width:180px;" />
-      <select class="cat-select" id="goal-cat-select">
-        <option>Life</option>
-        <option>Career</option>
-        <option>Wellbeing</option>
-        <option>Love</option>
-        <option>Abundance</option>
-        <option>Growth</option>
-      </select>
-      <button class="add-btn" onclick="addGoal()" style="width:48px;">+</button>
-    </div>
-    <div style="height:24px;"></div>
-  </div>
-
-  <!-- MOON PAGE -->
-  <div id="page-moon" class="page hidden">
-    <div class="page-header">
-      <div class="logo" style="margin-bottom:16px;">SOULSET</div>
-      <div class="section-label" style="padding:0;">LUNAR CYCLE</div>
-      <div class="page-title">Moon Energy</div>
-    </div>
-
-    <div class="moon-phase-display">
-      <span class="big-moon" id="big-moon"></span>
-      <div class="moon-phase-name" id="moon-phase-name"></div>
-      <div style="font-size:12px;letter-spacing:0.12em;color:var(--muted);margin-top:6px;" id="moon-day-text"></div>
-    </div>
-    <div class="moon-cycle-bar"><div class="moon-cycle-fill" id="moon-cycle-fill"></div></div>
-    <div style="display:flex;justify-content:space-between;padding:4px 24px;font-size:10px;letter-spacing:0.12em;color:var(--muted);margin-bottom:20px;">
-      <span>NEW MOON</span><span>FULL MOON</span><span>NEW MOON</span>
-    </div>
-
-    <div class="ritual-card">
-      <div class="section-label" style="padding:0;margin-bottom:16px;">✦ TODAY'S RITUAL</div>
-      <div class="ritual-title" id="ritual-title"></div>
-      <div id="ritual-steps"></div>
-    </div>
-    <div style="height:16px;"></div>
-  </div>
-
-  <!-- ME PAGE -->
-  <div id="page-me" class="page hidden">
-    <div class="profile-header">
-      <div class="profile-avatar">T</div>
-      <div class="profile-name">Tracie</div>
-      <div class="profile-tagline">MANIFESTING IN PROGRESS ✦</div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-num" id="stat-streak">0</div>
-        <div class="stat-label">DAY STREAK</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-habits">0</div>
-        <div class="stat-label">HABITS TODAY</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-goals">0</div>
-        <div class="stat-label">INTENTIONS SET</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-entries">0</div>
-        <div class="stat-label">REFLECTIONS</div>
-      </div>
-    </div>
-
-    <div style="margin:16px 16px 12px;"><div class="section-label" style="padding:0;">SETTINGS</div></div>
-    <div class="settings-item"><span>Notifications</span><span class="settings-arrow">›</span></div>
-    <div class="settings-item"><span>Journal prompts</span><span class="settings-arrow">›</span></div>
-    <div class="settings-item"><span>Affirmation style</span><span class="settings-arrow">›</span></div>
-    <div class="settings-item"><span>Moon reminders</span><span class="settings-arrow">›</span></div>
-    <div class="settings-item" style="margin-top:8px;color:var(--gold);"><span>Upgrade to Premium ✦</span><span class="settings-arrow">›</span></div>
-    <div class="settings-item" style="margin-top:8px;color:#e87070;cursor:pointer;" onclick="doSignOut()"><span>Sign out</span><span class="settings-arrow">›</span></div>
-    <div style="height:16px;"></div>
-  </div>
+  <nav class="nav" id="nav"></nav>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav id="nav-bar" class="hidden">
-  <button class="active" onclick="showTab('home',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    HOME
-  </button>
-  <button onclick="showTab('habits',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-    HABITS
-  </button>
-  <button onclick="showTab('gratitude',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-    GRATITUDE
-  </button>
-  <button onclick="showTab('vision',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-    VISION
-  </button>
-  <button onclick="showTab('moon',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-    MOON
-  </button>
-  <button onclick="showTab('me',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    ME
-  </button>
-</nav>
+<!-- PAYWALL / SHEETS -->
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
 
 <script>
-// State
-const state = {
-  journalText: '',
-  journalSaved: false,
-  mood: null,
-  habits: [
-    {id:1, name:'Morning pages', emoji:'📝', done:false, streak:3},
-    {id:2, name:'Meditation', emoji:'🧘', done:false, streak:7},
-    {id:3, name:'Movement', emoji:'✨', done:false, streak:1},
-    {id:4, name:'Hydration', emoji:'💧', done:false, streak:5},
-    {id:5, name:'No phone before 9am', emoji:'📵', done:false, streak:2},
-  ],
-  gratitude: ['','',''],
-  gratitudeSaved: false,
-  gratitudePast: [
-    {date:'MONDAY 24 MARCH', items:['My health and strength','A warm cup of tea this morning','The support of people who believe in me']},
-    {date:'SUNDAY 23 MARCH', items:['Quiet time to myself','Progress on my creative project','The beauty of spring']},
-  ],
-  goals: [
-    {id:1, text:'Launch my creative project', category:'Career', done:false},
-    {id:2, text:'Create a morning ritual I love', category:'Wellbeing', done:false},
-    {id:3, text:'Save for a dream holiday', category:'Life', done:false},
-    {id:4, text:'Read 12 books this year', category:'Growth', done:true},
-  ],
-  entries: 0,
+/* ============ Soulset — daily gratitude & wellbeing ============ */
+/* ---- CONFIG: pricing + Stripe (edit these in STRIPE-SETUP.md) ---- */
+const CONFIG = {
+  prices: {
+    monthly: { amount: "£4.99", per: "per month", id: "monthly",
+      stripeLink: "https://buy.stripe.com/9B6dR98dJ2oEb4laTnao805" },
+    yearly:  { amount: "£35.99", per: "per year", id: "yearly", sub: "Just £3/mo · save 40%",
+      stripeLink: "https://buy.stripe.com/00w14n3XtaVafkB5z3ao806" },
+  },
+  trialDays: 7,
 };
 
-const PROMPTS = [
-  '"What does abundance feel like in your body right now?"',
-  '"What are you ready to release to make space for what\'s coming?"',
-  '"Describe your ideal day three years from now in vivid detail."',
-  '"What would you do if you knew you could not fail?"',
-  '"What belief is quietly holding you back, and what\'s the truth?"',
-  '"What are you calling into your life this month?"',
-  '"How does your future self feel when they wake up in the morning?"',
-];
+/* ---- tiny store ---- */
+const KEY="soulset:v1";
+const todayKey=(d=new Date())=>d.toISOString().slice(0,10);
+let S = load();
+function load(){ try{const s=JSON.parse(localStorage.getItem(KEY))||fresh(); s.settings=s.settings||{affirmation:"Empowering"}; s.settings.reminder=s.settings.reminder||{on:false,time:"20:00"}; return s;}catch(e){return fresh()} }
+function fresh(){ return { name:"", premium:false, created:todayKey(), days:{}, habits:[], visions:[], settings:{affirmation:"Empowering", reminder:{on:false, time:"20:00"}}, lastVisit:"" }; }
+function save(){ localStorage.setItem(KEY,JSON.stringify(S)); }
+function day(k=todayKey()){ if(!S.days[k]) S.days[k]={gratitude:["","",""],mood:null,reflection:"",affirmDone:false}; return S.days[k]; }
 
-const AFFIRMATIONS = [
-  '"I am worthy of everything I desire."',
-  '"Abundance flows to me naturally and easily."',
-  '"I trust the timing of my life."',
-  '"I am becoming the person I was always meant to be."',
-  '"Everything I need is already within me."',
-  '"I attract love, joy, and prosperity effortlessly."',
-  '"My dreams are valid and I am making them real."',
-];
-
-const MOODS = ['😔','😕','😐','🙂','😊','✨'];
-
-const MOON_RITUALS = {
-  'New Moon': {
-    title: 'Set Your Intentions',
-    steps: [
-      'Light a candle and sit in stillness for five minutes.',
-      'Write three intentions you are seeding into the universe.',
-      'Speak them aloud as if they have already happened.',
-      'Close with gratitude for what is already on its way.',
-    ]
-  },
-  'Waxing Crescent': {
-    title: 'Take Inspired Action',
-    steps: [
-      'Identify one small step toward each of your intentions.',
-      'Take that step today, however small it seems.',
-      'Journal: what feels like it is already shifting?',
-      'Trust that the seeds you planted are growing.',
-    ]
-  },
-  'First Quarter': {
-    title: 'Push Through Resistance',
-    steps: [
-      'Notice what is resisting your growth right now.',
-      'Write down the resistance without judgment.',
-      'Ask: what would my future self do in this moment?',
-      'Take the harder, braver action.',
-    ]
-  },
-  'Waxing Gibbous': {
-    title: 'Refine and Align',
-    steps: [
-      'Review your intentions from the new moon.',
-      'What has already arrived or shifted?',
-      'Adjust your vision if it has evolved.',
-      'Express gratitude for what is in motion.',
-    ]
-  },
-  'Full Moon': {
-    title: 'Receive and Release',
-    steps: [
-      'Go outside or sit by a window in the moonlight.',
-      'Write what you are releasing and burn or shred the paper.',
-      'Write what you are receiving with open hands.',
-      'Celebrate your progress, however small.',
-    ]
-  },
-  'Waning Gibbous': {
-    title: 'Share Your Light',
-    steps: [
-      'Reflect on what you have learned this cycle.',
-      'Share something of value with someone you love.',
-      'Practice radical gratitude for three specific things.',
-      'Begin to wind down and restore your energy.',
-    ]
-  },
-  'Last Quarter': {
-    title: 'Release and Forgive',
-    steps: [
-      'What are you still carrying that no longer serves you?',
-      'Write a forgiveness letter to yourself or another.',
-      'Do something restorative for your body today.',
-      'Prepare space for the new cycle approaching.',
-    ]
-  },
-  'Waning Crescent': {
-    title: 'Rest and Surrender',
-    steps: [
-      'Rest more than you think you need to.',
-      'Spend time in silence or nature today.',
-      'Journal: what is ready to be born in the next cycle?',
-      'Trust that the universe is rearranging on your behalf.',
-    ]
-  },
+/* ---- content ---- */
+const AFFIRMATIONS = {
+ Empowering:["I am the architect of my own peace.","Everything I need is already within me.","I rise to meet this day with calm and courage.","I am worthy of the good that flows to me.","My presence is a gift to the world.","I trust the unfolding of my life.","I am grounded, grateful and whole.","Abundance is my natural state.","I release what I cannot control.","I am becoming who I am meant to be."],
+ Gentle:["It's okay to move slowly today.","I am allowed to rest and still be enough.","I meet myself with kindness.","Small steps are still steps forward.","I breathe in calm, I breathe out tension.","I am safe in this moment.","My feelings are welcome here.","I give myself permission to simply be.","Softness is a kind of strength.","I am gentle with my becoming."],
+ Manifesting:["I am a magnet for beautiful opportunities.","What I seek is seeking me.","I align with the life I'm calling in.","The universe conspires in my favour.","I am ready to receive.","My dreams are on their way to me.","I act as if it is already mine.","Money and joy flow to me with ease.","I attract people who lift me higher.","I am co-creating my reality, today."]
 };
+const PROMPTS=["What is one small thing that went right today?","Who or what made you feel supported recently?","Describe a moment today you'd like to remember.","What is your body grateful for right now?","What strength helped you through today?","What beauty did you notice today?","What are you looking forward to tomorrow?","Where did you feel peace today, even briefly?","What did you learn about yourself this week?","What would you thank your past self for?"];
+const VISION_CATS=["Life","Career","Wellbeing","Love","Abundance","Growth"];
+const MOON_RITUALS={
+ "New Moon":{e:"Intention & beginnings",t:"Plant a seed. Write one intention you're calling in and speak it aloud. The dark sky holds space for new starts."},
+ "Waxing Crescent":{e:"Momentum & hope",t:"Take one small action toward your intention. Momentum loves the waxing moon."},
+ "First Quarter":{e:"Decision & courage",t:"Notice resistance. Choose to keep going. Push gently through one obstacle today."},
+ "Waxing Gibbous":{e:"Refine & trust",t:"Adjust your course. Tend to the details. Trust that what you're building is taking form."},
+ "Full Moon":{e:"Release & gratitude",t:"Celebrate how far you've come. Write what you're ready to release, then let it go under the full light."},
+ "Waning Gibbous":{e:"Gratitude & sharing",t:"Share your light. Express thanks to someone who helped you. Reflect on a recent win."},
+ "Last Quarter":{e:"Forgive & let go",t:"Forgive yourself for something small. Clear space — physically or emotionally — for what's next."},
+ "Waning Crescent":{e:"Rest & surrender",t:"Slow down. Rest is productive. Surrender what is no longer yours to carry before the new moon."}
+};
+function moonPhase(date=new Date()){
+  const lp=2551443, now=date.getTime()/1000;
+  const newMoon=new Date(Date.UTC(2000,0,6,18,14)).getTime()/1000;
+  let phase=((now-newMoon)%lp)/lp; if(phase<0)phase+=1;
+  const idx=Math.floor(phase*8+.5)%8;
+  const names=["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];
+  return {name:names[idx],pct:Math.round(phase*100)};
+}
+const pickDaily=arr=>arr[(new Date().getFullYear()*1000+dayOfYear())%arr.length];
+function dayOfYear(){const n=new Date();return Math.floor((n-new Date(n.getFullYear(),0,0))/864e5);}
 
-function getMoonPhase(date) {
-  const known = new Date(2000,0,6);
-  const diff = (date - known)/(1000*60*60*24);
-  const cycle = 29.53;
-  const day = ((diff % cycle)+cycle) % cycle;
-  const phases = [
-    {name:'New Moon', emoji:'🌑', day:0},
-    {name:'Waxing Crescent', emoji:'🌒', day:3.7},
-    {name:'First Quarter', emoji:'🌓', day:7.4},
-    {name:'Waxing Gibbous', emoji:'🌔', day:11.1},
-    {name:'Full Moon', emoji:'🌕', day:14.8},
-    {name:'Waning Gibbous', emoji:'🌖', day:18.5},
-    {name:'Last Quarter', emoji:'🌗', day:22.1},
-    {name:'Waning Crescent', emoji:'🌘', day:25.8},
-  ];
-  let phase = phases[0];
-  for(let i=phases.length-1;i>=0;i--){if(day>=phases[i].day){phase=phases[i];break;}}
-  return {...phase, dayInCycle:day};
+/* ---- streak ---- */
+function activeOn(k){const d=S.days[k];if(!d)return false;return (d.gratitude&&d.gratitude.some(x=>x&&x.trim()))||d.mood!=null||(d.reflection&&d.reflection.trim())||d.affirmDone;}
+function streak(){let c=0;let d=new Date();for(;;){const k=todayKey(d);if(activeOn(k)){c++;d.setDate(d.getDate()-1);}else{if(k===todayKey())d.setDate(d.getDate()-1);else break;}if(c>3650)break;}return c;}
+function totalGratitudes(){return Object.values(S.days).reduce((a,d)=>a+(d.gratitude?d.gratitude.filter(x=>x&&x.trim()).length:0),0);}
+function totalReflections(){return Object.values(S.days).filter(d=>d.reflection&&d.reflection.trim()).length;}
+
+/* ---- nav ---- */
+const SCREENS=[
+ {id:"today",label:"Home",icon:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/>'},
+ {id:"gratitude",label:"Gratitude",icon:'<path d="M12 21s-7-4.5-9.5-9C1 9 2.5 5.5 6 5.5c2 0 3 1.2 6 4 3-2.8 4-4 6-4 3.5 0 5 3.5 3.5 6.5C19 16.5 12 21 12 21z"/>'},
+ {id:"habits",label:"Habits",icon:'<path d="M4 12.5 9 17l11-11"/><circle cx="6" cy="7" r="2"/>'},
+ {id:"vision",label:"Vision",icon:'<circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/>'},
+ {id:"moon",label:"Moon",icon:'<path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/>'},
+ {id:"me",label:"Me",icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>'},
+];
+let current="today";
+function buildNav(){
+  document.getElementById("nav").innerHTML=SCREENS.map(s=>
+   `<button class="navb${s.id===current?' active':''}" onclick="go('${s.id}')"><svg viewBox="0 0 24 24">${s.icon}</svg>${s.label}</button>`).join("");
+}
+function go(id){current=id;document.querySelectorAll(".screen").forEach(e=>e.classList.remove("active"));
+  document.getElementById("s-"+id).classList.add("active");document.getElementById("scroll").scrollTop=0;buildNav();render(id);}
+
+/* ---- premium gate ---- */
+function requirePremium(featureName){
+  if(S.premium)return true;
+  openPaywall(featureName);return false;
 }
 
-// Stars
-function makeStars(){
-  const c=document.getElementById('stars');
-  for(let i=0;i<80;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    s.style.left=Math.random()*100+'%';
-    s.style.top=Math.random()*100+'%';
-    s.style.opacity=Math.random()*0.6+0.1;
-    s.style.animationDelay=Math.random()*3+'s';
-    c.appendChild(s);
+/* ============ RENDER ============ */
+function render(id){({today:rToday,gratitude:rGrat,habits:rHabits,vision:rVision,moon:rMoon,me:rMe}[id])();updatePremChip();}
+function updatePremChip(){const c=document.getElementById("premChip");if(S.premium){c.className="premchip active";c.textContent="✦ Premium";}else{c.className="premchip";c.textContent="✦ Go Premium";}}
+
+function greeting(){const h=new Date().getHours();return h<12?"Good morning":h<18?"Good afternoon":"Good evening";}
+
+function rToday(){
+  const d=day(), aff=pickDaily(AFFIRMATIONS[S.settings.affirmation]||AFFIRMATIONS.Empowering), prompt=pickDaily(PROMPTS), st=streak();
+  const moods=["😔","😕","😐","🙂","😊"];
+  document.getElementById("s-today").innerHTML=`
+   <p class="hello">${greeting()},<br><span class="sp serif">${esc(S.name)||"beautiful soul"}</span> ✦</p>
+   <p class="subtle">${new Date().toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'})}</p>
+   <div class="streakrow">
+     <div class="stat"><b>${st}</b><span>Day streak</span></div>
+     <div class="stat"><b>${totalGratitudes()}</b><span>Gratitudes</span></div>
+     <div class="stat"><b>${(S.habits.filter(h=>h.log&&h.log[todayKey()]).length)}/${S.habits.length||0}</b><span>Habits today</span></div>
+   </div>
+   <div class="hero">
+     <div class="tag">Today's affirmation</div>
+     <div class="q">${aff}</div>
+     <button class="btn ${d.affirmDone?'btn-ghost':'btn-primary'}" style="margin-top:1rem" onclick="toggleAffirm()">${d.affirmDone?'✓ Repeated today':'I affirm this ✦'}</button>
+   </div>
+   <p class="label">How are you feeling?</p>
+   <div class="moodrow">${moods.map((m,i)=>`<button class="mood ${d.mood===i?'sel':''}" onclick="setMood(${i})">${m}</button>`).join("")}</div>
+   <div style="height:1.2rem"></div>
+   <div class="card">
+     <div class="tag" style="font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Daily reflection</div>
+     <p class="serif" style="font-size:1.2rem;line-height:1.4;margin:.1rem 0 .8rem">${prompt}</p>
+     <textarea id="reflectBox" rows="3" placeholder="Let it flow…" oninput="S.days[todayKey()].reflection=this.value">${esc(d.reflection)}</textarea>
+     <button class="btn btn-ghost btn-block" style="margin-top:.7rem" onclick="saveReflection()">Save reflection</button>
+   </div>
+   <div style="height:1rem"></div>
+   <button class="btn btn-primary btn-block" onclick="go('gratitude')">Today's gratitude ritual →</button>
+  `;
+}
+function toggleAffirm(){day().affirmDone=!day().affirmDone;save();rToday();buildNav();}
+function setMood(i){day().mood=i;save();rToday();toast("Mood captured ✦");}
+function saveReflection(){day().reflection=document.getElementById("reflectBox").value;save();toast("Reflection saved ✦");}
+
+function rGrat(){
+  const d=day();
+  const history=Object.keys(S.days).filter(k=>k!==todayKey()&&S.days[k].gratitude.some(x=>x&&x.trim())).sort().reverse();
+  const shown=S.premium?history:history.slice(0,3);
+  document.getElementById("s-gratitude").innerHTML=`
+   <h2 class="sec">Gratitude</h2>
+   <p class="sec-sub">Three things you're grateful for today.</p>
+   <div class="card">
+     ${[0,1,2].map(i=>`<input style="margin-bottom:.6rem" placeholder="${['One','Two','Three'][i]}…" value="${esc(d.gratitude[i]||'')}" oninput="S.days[todayKey()].gratitude[${i}]=this.value">`).join("")}
+     <button class="btn btn-primary btn-block" onclick="saveGratitude()">Save today's gratitude ✦</button>
+     ${d.gratitude.some(x=>x&&x.trim())?'<div class="saved-tag">✓ Saved for today</div>':''}
+   </div>
+   <div style="height:1.6rem"></div>
+   <p class="label">Your gratitude journal</p>
+   ${shown.length?shown.map(k=>`<div class="entry"><div class="d">${fmt(k)}</div>${S.days[k].gratitude.filter(x=>x&&x.trim()).map(g=>`<p>✦ ${esc(g)}</p>`).join("")}</div>`).join(""):'<p class="muted" style="font-size:.9rem">Your saved gratitudes will gather here. ✦</p>'}
+   ${(!S.premium&&history.length>3)?`<div class="lockcard" style="margin-top:1rem"><div class="ic">✦</div><p class="serif" style="font-size:1.2rem;margin:.4rem 0 .2rem">Unlock your full journal</p><p class="muted" style="font-size:.88rem">See every reflection you've ever written.</p><button class="btn btn-primary" style="margin-top:.9rem" onclick="openPaywall('Full gratitude journal')">Go Premium</button></div>`:''}
+  `;
+}
+function saveGratitude(){const d=day();for(let i=0;i<3;i++){const el=document.querySelectorAll("#s-gratitude input")[i];d.gratitude[i]=el.value;}save();rGrat();buildNav();toast("Gratitude saved ✦");}
+
+function rHabits(){
+  const k=todayKey(), free=3;
+  document.getElementById("s-habits").innerHTML=`
+   <h2 class="sec">Daily Rituals</h2>
+   <p class="sec-sub">Small acts of self-care, every day.</p>
+   ${S.habits.length?S.habits.map((h,i)=>{const done=h.log&&h.log[k];return `<div class="item ${done?'done':''}"><button class="check" onclick="toggleHabit(${i})">${done?'✓':''}</button><div class="it-name">${esc(h.name)}<div class="it-sub">${habitStreak(h)} day streak</div></div><button onclick="delHabit(${i})" style="color:var(--faint);font-size:1.1rem">✕</button></div>`}).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">Add your first ritual below — like “Drink water”, “Move my body”, or “10 deep breaths”.</p>'}
+   <button class="add" onclick="addHabit()">+ Add a ritual</button>
+   ${(!S.premium&&S.habits.length>=free)?'<p class="muted center" style="font-size:.78rem;margin-top:.9rem">Free includes 3 rituals · <a class="link" onclick="openPaywall(\'Unlimited rituals\')">unlock unlimited ✦</a></p>':''}
+  `;
+}
+function habitStreak(h){let c=0,d=new Date();for(;;){const k=todayKey(d);if(h.log&&h.log[k]){c++;d.setDate(d.getDate()-1);}else{if(k===todayKey())d.setDate(d.getDate()-1);else break;}if(c>3650)break;}return c;}
+function toggleHabit(i){const k=todayKey();const h=S.habits[i];h.log=h.log||{};h.log[k]=!h.log[k];save();render('habits');buildNav();}
+function addHabit(){if(!S.premium&&S.habits.length>=3){return openPaywall("Unlimited rituals");}
+  openSheet(`<div class="grab"></div><h2 class="sec center">New ritual</h2><p class="sec-sub center">What small act will you commit to?</p>
+   <input id="habitInput" placeholder="e.g. 10 minutes of stillness" />
+   <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="commitHabit()">Add ritual ✦</button>`);
+  setTimeout(()=>document.getElementById("habitInput").focus(),200);}
+function commitHabit(){const v=document.getElementById("habitInput").value.trim();if(!v)return;S.habits.push({name:v,log:{}});save();closeSheet();render('habits');toast("Ritual added ✦");}
+function delHabit(i){S.habits.splice(i,1);save();render('habits');}
+
+function rVision(){
+  let cat=window.__visionCat||"Life";
+  if(!S.premium){
+    document.getElementById("s-vision").innerHTML=`
+     <h2 class="sec">Vision Board</h2><p class="sec-sub">What you are calling into existence.</p>
+     <div class="lockcard"><div class="ic">✦</div><p class="serif" style="font-size:1.4rem;margin:.5rem 0 .2rem">Manifest with intention</p>
+     <p class="muted" style="font-size:.9rem;max-width:300px;margin:.3rem auto 0">Create a beautiful vision board across Life, Career, Love, Abundance & more. Set intentions and watch them unfold.</p>
+     <button class="btn btn-primary" style="margin-top:1.1rem" onclick="openPaywall('Vision board')">Unlock with Premium ✦</button></div>`;
+    return;
+  }
+  const list=S.visions.filter(v=>v.cat===cat);
+  document.getElementById("s-vision").innerHTML=`
+   <h2 class="sec">Vision Board</h2><p class="sec-sub">What you are calling into existence.</p>
+   <div class="chips">${VISION_CATS.map(c=>`<button class="chip ${c===cat?'sel':''}" onclick="window.__visionCat='${c}';render('vision')">${c}</button>`).join("")}</div>
+   ${list.length?list.map((v,idx)=>`<div class="vision"><div style="display:flex;justify-content:space-between"><span class="cat">${v.cat}</span><button onclick="delVision('${v.id}')" style="color:var(--faint)">✕</button></div><p>${esc(v.text)}</p></div>`).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">No intentions here yet. Add what you\'re calling in. ✦</p>'}
+   <button class="add" onclick="addVision('${cat}')">+ Add intention</button>`;
+}
+function addVision(cat){openSheet(`<div class="grab"></div><h2 class="sec center">New intention</h2><p class="sec-sub center">Category: ${cat}</p>
+  <textarea id="visionInput" rows="3" placeholder="I am calling in…"></textarea>
+  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="commitVision('${cat}')">Set intention ✦</button>`);
+  setTimeout(()=>document.getElementById("visionInput").focus(),200);}
+function commitVision(cat){const v=document.getElementById("visionInput").value.trim();if(!v)return;S.visions.push({id:Date.now()+"",cat,text:v});save();closeSheet();render('vision');toast("Intention set ✦");}
+function delVision(id){S.visions=S.visions.filter(v=>v.id!==id);save();render('vision');}
+
+function rMoon(){
+  if(!S.premium){
+    document.getElementById("s-moon").innerHTML=`
+     <h2 class="sec">Moon Energy</h2><p class="sec-sub">Align your rituals with the lunar cycle.</p>
+     <div class="moondisc"></div>
+     <div class="lockcard"><div class="ic">🌙</div><p class="serif" style="font-size:1.3rem;margin:.5rem 0 .2rem">Flow with the moon</p>
+     <p class="muted" style="font-size:.9rem;max-width:300px;margin:.3rem auto 0">Daily lunar phases with guided rituals for releasing, manifesting and resting in tune with the sky.</p>
+     <button class="btn btn-primary" style="margin-top:1.1rem" onclick="openPaywall('Moon rituals')">Unlock with Premium ✦</button></div>`;
+    return;
+  }
+  const m=moonPhase(), r=MOON_RITUALS[m.name];
+  document.getElementById("s-moon").innerHTML=`
+   <h2 class="sec">Moon Energy</h2><p class="sec-sub">${new Date().toLocaleDateString(undefined,{day:'numeric',month:'long'})}</p>
+   <div class="moondisc"></div>
+   <p class="center serif" style="font-size:1.7rem;margin:.2rem 0 0">${m.name}</p>
+   <p class="center muted" style="font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">${r.e}</p>
+   <div class="card" style="margin-top:1.2rem"><div class="tag" style="font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Tonight's ritual</div>
+   <p class="serif" style="font-size:1.2rem;line-height:1.45;margin:.2rem 0">${r.t}</p></div>`;
+}
+
+function rMe(){
+  document.getElementById("s-me").innerHTML=`
+   <h2 class="sec">${esc(S.name)||"You"} ✦</h2>
+   <p class="sec-sub">Member since ${fmt(S.created)}</p>
+   <div class="streakrow">
+     <div class="stat"><b>${streak()}</b><span>Day streak</span></div>
+     <div class="stat"><b>${totalGratitudes()}</b><span>Gratitudes</span></div>
+   </div>
+   <div class="streakrow">
+     <div class="stat"><b>${totalReflections()}</b><span>Reflections</span></div>
+     <div class="stat"><b>${S.visions.length}</b><span>Intentions</span></div>
+   </div>
+   ${S.premium?`<div class="card center" style="margin-top:.4rem;background:linear-gradient(135deg,rgba(233,201,135,.16),rgba(255,255,255,.03))"><b class="sp serif" style="font-size:1.2rem">✦ Premium member</b><p class="muted" style="font-size:.85rem;margin:.3rem 0 0">Thank you for supporting Soulset.</p></div>`
+   :`<div class="card center" style="margin-top:.4rem;background:linear-gradient(135deg,rgba(157,139,224,.18),rgba(230,166,199,.1))"><p class="serif" style="font-size:1.25rem;margin:.1rem 0">Unlock the full ritual</p><p class="muted" style="font-size:.85rem;margin:.2rem 0 .8rem">Vision board, moon rituals, unlimited everything & your complete journal.</p><button class="btn btn-primary btn-block" onclick="openPaywall()">Start 7-day free trial ✦</button></div>`}
+   <div style="height:1.4rem"></div>
+   <p class="label">Settings</p>
+   <div class="card" style="padding:.4rem 0">
+     ${row("Affirmation style",`<select id="affSel" onchange="S.settings.affirmation=this.value;save();toast('Updated ✦')" style="background:transparent;border:none;color:var(--gold);font-family:inherit;font-size:.92rem">${["Empowering","Gentle","Manifesting"].map(o=>`<option ${S.settings.affirmation===o?'selected':''}>${o}</option>`).join("")}</select>`)}
+     ${row("Daily reminder",`<span style="display:inline-flex;align-items:center;gap:.5rem"><input type="time" value="${S.settings.reminder.time}" onchange="setReminderTime(this.value)" style="width:auto;padding:.3rem .5rem;background:transparent;border:1px solid var(--line);color:var(--gold);font-family:inherit"><button class="link" onclick="toggleReminder()" style="font-size:.85rem">${S.settings.reminder.on?'On ✓':'Turn on'}</button></span>`)}
+     ${S.settings.reminder.on?row("","<button class='link' onclick='testReminder()' style='font-size:.8rem'>Send a test reminder now</button>"):""}
+     ${row("Export my data",`<button class="link" onclick="exportData()" style="font-size:.85rem">Download</button>`)}
+     ${S.premium?row("Manage subscription",`<button class="link" onclick="manageSub()" style="font-size:.85rem">Stripe portal</button>`):''}
+     ${row("Restore purchase",`<button class="link" onclick="restore()" style="font-size:.85rem">Restore</button>`)}
+   </div>
+   <div style="height:1rem"></div>
+   <button class="btn btn-ghost btn-block" onclick="resetAll()">Sign out / reset</button>
+   <p class="center muted" style="font-size:.72rem;margin-top:1.4rem;opacity:.7">Soulset · made with ✦ · v1.0</p>
+  `;
+  const sel=document.getElementById("affSel"); if(sel)sel.value=S.settings.affirmation;
+}
+function row(l,r){return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.1rem;border-bottom:1px solid var(--line)"><span style="font-size:.92rem">${l}</span>${r}</div>`;}
+
+/* ---- paywall ---- */
+function openPaywall(feature){
+  const m=CONFIG.prices.monthly,y=CONFIG.prices.yearly;
+  openSheet(`
+   <button class="x" onclick="closeSheet()">✕</button><div class="grab"></div>
+   <p class="center" style="font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)">Soulset Premium</p>
+   <h2 class="sec center" style="font-size:1.9rem">${feature?esc(feature)+' is Premium':'Unlock your full ritual'}</h2>
+   <p class="sec-sub center">${CONFIG.trialDays} days free, then choose your plan. Cancel anytime.</p>
+   <div style="margin:.4rem 0 1.2rem">
+     ${["Unlimited gratitude journal & history","Full vision board across 6 life areas","Daily moon rituals & lunar guidance","Unlimited daily rituals & habit streaks","Every affirmation style & theme","Your data, backed up and yours forever"].map(f=>`<div class="feat"><span class="t">✦</span><span>${f}</span></div>`).join("")}
+   </div>
+   <div class="plan best" onclick="checkout('yearly')"><span class="ribbon">Save 40%</span><div><div class="pname">Yearly</div><div class="pmeta">${y.sub}</div></div><div class="price">${y.amount}<span class="per">${y.per}</span></div></div>
+   <div class="plan" onclick="checkout('monthly')"><div><div class="pname">Monthly</div><div class="pmeta">Flexible, cancel anytime</div></div><div class="price">${m.amount}<span class="per">${m.per}</span></div></div>
+   <button class="btn btn-primary btn-block" style="margin-top:.4rem" onclick="checkout('yearly')">Start ${CONFIG.trialDays}-day free trial ✦</button>
+   <p class="center muted" style="font-size:.78rem;margin:.7rem 0 0">✦ No charge today &nbsp;·&nbsp; Cancel in one tap &nbsp;·&nbsp; Reminder before trial ends</p>
+   <small class="fine">7 days free, then ${y.amount}/year unless cancelled. Cancel anytime in Settings.<br>By continuing you agree to our <span class="link" onclick="legal('terms')">Terms</span> & <span class="link" onclick="legal('privacy')">Privacy</span>.</small>
+  `);
+}
+function checkout(planId){
+  const plan = planId==='yearly'?CONFIG.prices.yearly:CONFIG.prices.monthly;
+  if(plan.stripeLink){
+    // remember intent so success-return can unlock
+    localStorage.setItem("soulset:pending",planId);
+    const url=plan.stripeLink + (plan.stripeLink.includes('?')?'&':'?') + "client_reference_id=" + encodeURIComponent(S.name||"soul");
+    window.location.href=url;
+  } else {
+    // Stripe not connected yet — demo unlock so the experience is testable
+    closeSheet();
+    openSheet(`<div class="grab"></div><h2 class="sec center">Almost there ✦</h2>
+      <p class="sec-sub center" style="max-width:340px;margin:0 auto 1rem">Payments aren't connected yet. Follow <b>STRIPE-SETUP.md</b> to plug in your Stripe (5 mins) and this button will take real subscriptions.</p>
+      <button class="btn btn-primary btn-block" onclick="demoUnlock()">Preview Premium (test) ✦</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:.6rem" onclick="closeSheet()">Not now</button>`);
+  }
+}
+function demoUnlock(){S.premium=true;save();closeSheet();updatePremChip();render(current);toast("Premium unlocked (test mode) ✦");}
+function manageSub(){toast("Add your Stripe customer portal link in setup.");}
+function restore(){toast("Checking… connect Stripe to enable restore.");}
+function legal(x){window.open(x==='terms'?'terms.html':'privacy.html','_blank');}
+
+/* handle Stripe success return: ...?premium=success */
+function handleReturn(){
+  const p=new URLSearchParams(location.search);
+  if(p.get("premium")==="success" || p.get("checkout")==="success"){
+    S.premium=true;save();
+    history.replaceState({},"",location.pathname);
+    setTimeout(()=>{toast("Welcome to Premium ✦");},400);
   }
 }
 
-// Init
-// AUTH
-let users = {};
-let currentUser = null;
+/* ---- data / reset ---- */
+function exportData(){const blob=new Blob([JSON.stringify(S,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="soulset-backup.json";a.click();toast("Backup downloaded ✦");}
+function resetAll(){openSheet(`<div class="grab"></div><h2 class="sec center">Sign out & reset?</h2><p class="sec-sub center">This clears your entries on this device. Export a backup first if you'd like to keep them.</p><button class="btn btn-ghost btn-block" onclick="exportData()">Download backup</button><button class="btn btn-block" style="margin-top:.6rem;background:rgba(200,60,100,.12);color:#c23b67" onclick="localStorage.removeItem(KEY);location.reload()">Yes, reset everything</button><button class="btn btn-ghost btn-block" style="margin-top:.6rem" onclick="closeSheet()">Cancel</button>`);}
 
-function loadStorage(){
+/* ---- daily reminders (local notifications) ---- */
+const REMINDER_MSGS=["Your daily ritual awaits ✦","A moment of gratitude? 🌙","Pause, breathe, give thanks ✦","Time to tend your inner garden 🌿","What are you grateful for today? ✦","Keep your streak glowing ✦","A mindful minute, just for you 🌙"];
+async function toggleReminder(){
+  const r=S.settings.reminder;
+  if(!r.on){
+    if(!('Notification' in window)){toast('Notifications aren\'t supported on this device');return;}
+    let perm=Notification.permission; if(perm!=='granted')perm=await Notification.requestPermission();
+    if(perm!=='granted'){toast('Allow notifications to enable reminders');return;}
+    r.on=true;save();render('me');scheduleReminder();toast('Daily reminder set ✦');
+  } else { r.on=false;save();render('me');clearReminder();toast('Reminder turned off'); }
+}
+function setReminderTime(t){S.settings.reminder.time=t;save();if(S.settings.reminder.on){scheduleReminder();toast('Reminder time updated ✦');}}
+async function clearReminder(){ if(!('serviceWorker' in navigator))return; try{const reg=await navigator.serviceWorker.ready;const ex=await reg.getNotifications({tag:'soulset-daily',includeTriggered:true});ex.forEach(n=>n.close());}catch(e){} }
+async function scheduleReminder(){
+  if(!S.settings.reminder.on||!('serviceWorker' in navigator))return;
   try{
-    users = JSON.parse(localStorage.getItem('ss_users')||'{}');
-    currentUser = localStorage.getItem('ss_current')||null;
-  } catch(e){users={};currentUser=null;}
+    const reg=await navigator.serviceWorker.ready; await clearReminder();
+    const [h,m]=S.settings.reminder.time.split(':').map(Number);
+    const next=new Date(); next.setHours(h,m,0,0); if(next<=new Date())next.setDate(next.getDate()+1);
+    const msg=REMINDER_MSGS[next.getDate()%REMINDER_MSGS.length];
+    if('TimestampTrigger' in window){
+      await reg.showNotification('Soulset ✦',{body:msg,tag:'soulset-daily',icon:'icon-192.png',badge:'icon-192.png',showTrigger:new TimestampTrigger(next.getTime()),data:{url:'./'}});
+    }
+  }catch(e){/* trigger API not supported — reminder still re-arms each visit */}
+}
+async function testReminder(){
+  if(!('Notification' in window)){toast('Notifications aren\'t supported here');return;}
+  let perm=Notification.permission; if(perm!=='granted')perm=await Notification.requestPermission();
+  if(perm!=='granted'){toast('Allow notifications first');return;}
+  try{ if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.ready;reg.showNotification('Soulset ✦',{body:'Your daily nudge — take a mindful moment. 🌙',icon:'icon-192.png',badge:'icon-192.png',data:{url:'./'}});} else {new Notification('Soulset ✦',{body:'Your daily nudge.'});} toast('Sent ✦ check your notifications'); }catch(e){toast('Could not show notification here');}
 }
 
-function saveUsers(){
-  try{localStorage.setItem('ss_users',JSON.stringify(users));}catch(e){}
-}
+/* ---- sheet/toast ---- */
+function openSheet(html){document.getElementById("sheet").innerHTML=html;document.getElementById("overlay").classList.add("open");}
+function closeSheet(){document.getElementById("overlay").classList.remove("open");}
+document.getElementById("overlay").addEventListener("click",e=>{if(e.target.id==="overlay")closeSheet();});
+let toastT;function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1900);}
 
-function saveSession(email){
-  try{localStorage.setItem('ss_current',email);}catch(e){}
-}
+/* ---- util ---- */
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function fmt(k){return new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});}
 
-function showForgot(){
-  ['login-form','signup-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  document.getElementById('forgot-form').classList.remove('hidden');
-  document.getElementById('forgot-error').textContent='';
-}
-function showLogin(){
-  ['signup-form','forgot-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  document.getElementById('login-form').classList.remove('hidden');
-  document.getElementById('login-error').textContent='';
-}
-function showSignup(){
-  ['login-form','forgot-form','reset-form'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  document.getElementById('signup-form').classList.remove('hidden');
-  document.getElementById('signup-error').textContent='';
-}
-
-let resetEmail='';
-function doForgotStep1(){
-  const email=document.getElementById('forgot-email').value.trim().toLowerCase();
-  const err=document.getElementById('forgot-error');
-  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';return;}
-  if(!users[email]){err.textContent='No account found with that email.';return;}
-  resetEmail=email;
-  document.getElementById('forgot-form').classList.add('hidden');
-  document.getElementById('reset-form').classList.remove('hidden');
-  document.getElementById('reset-error').textContent='';
-}
-function doReset(){
-  const pass=document.getElementById('reset-password').value;
-  const confirm=document.getElementById('reset-confirm').value;
-  const err=document.getElementById('reset-error');
-  if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
-  if(pass!==confirm){err.textContent='Passwords do not match.';return;}
-  users[resetEmail].password=pass;
-  saveUsers();
-  document.getElementById('reset-form').classList.add('hidden');
-  document.getElementById('login-form').classList.remove('hidden');
-  document.getElementById('login-error').textContent='';
-  document.getElementById('login-email').value=resetEmail;
-  // show success briefly
-  const success=document.createElement('div');
-  success.style.cssText='color:#7ec87e;font-size:11px;letter-spacing:0.08em;text-align:center;margin-bottom:8px;';
-  success.textContent='Password updated. Please sign in. ✦';
-  document.getElementById('login-form').insertBefore(success,document.getElementById('login-form').querySelector('.auth-field'));
-  setTimeout(()=>success.remove(),4000);
-}
-
-function doLogin(){
-  const email=document.getElementById('login-email').value.trim().toLowerCase();
-  const pass=document.getElementById('login-password').value;
-  const err=document.getElementById('login-error');
-  if(!email||!pass){err.textContent='Please enter your email and password.';return;}
-  if(!users[email]){err.textContent='No account found. Please sign up.';return;}
-  if(users[email].password!==pass){err.textContent='Incorrect password. Try again.';return;}
-  currentUser=email;
-  saveSession(email);
-  launchApp(users[email].name);
-}
-
-function doSignup(){
-  const name=document.getElementById('signup-name').value.trim();
-  const email=document.getElementById('signup-email').value.trim().toLowerCase();
-  const pass=document.getElementById('signup-password').value;
-  const confirm=document.getElementById('signup-confirm').value;
-  const err=document.getElementById('signup-error');
-  if(!name){err.textContent='Please enter your name.';return;}
-  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';return;}
-  if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
-  if(pass!==confirm){err.textContent='Passwords do not match.';return;}
-  if(users[email]){err.textContent='An account with this email already exists.';return;}
-  users[email]={name,password:pass};
-  saveUsers();
-  currentUser=email;
-  saveSession(email);
-  launchApp(name);
-}
-
-function launchApp(name){
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('app').classList.remove('hidden');
-  document.getElementById('nav-bar').classList.remove('hidden');
-  // Update name displays
-  document.querySelectorAll('.user-name-display').forEach(el=>el.textContent=name);
-  document.querySelector('.profile-name').textContent=name;
-  document.querySelector('.profile-avatar').textContent=name.charAt(0).toUpperCase();
-  init();
-}
-
-function doSignOut(){
-  try{localStorage.removeItem('ss_current');}catch(e){}
-  location.reload();
-}
-
-// Check if already logged in
-window.addEventListener('DOMContentLoaded',()=>{
-  loadStorage();
-  const moon=getMoonPhase(new Date());
-  const el=document.getElementById('auth-moon-emoji');
-  if(el)el.textContent=moon.emoji;
-  if(currentUser&&users[currentUser]){
-    launchApp(users[currentUser].name);
-  }
-});
-
-function init(){
-  makeStars();
-  const now = new Date();
-  const h = now.getHours();
-  document.getElementById('greeting').textContent = h<12?'Good morning,':h<17?'Good afternoon,':'Good evening,';
-  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('date-line').textContent = `${days[now.getDay()].toUpperCase()} ${now.getDate()} ${months[now.getMonth()].toUpperCase()}`;
-
-  const moon = getMoonPhase(now);
-  document.getElementById('home-moon-emoji').textContent = moon.emoji;
-  document.getElementById('home-moon-name').textContent = moon.name;
-
-  const dots = document.getElementById('moon-dots');
-  const totalDots = 9;
-  const litDots = Math.round((moon.dayInCycle/29.53)*totalDots);
-  dots.innerHTML='';
-  for(let i=0;i<totalDots;i++){
-    const d=document.createElement('div');
-    d.className='moon-dot'+(i<litDots?' lit':'');
-    dots.appendChild(d);
-  }
-
-  const dayIdx = now.getDate() % PROMPTS.length;
-  document.getElementById('prompt-text').textContent = PROMPTS[dayIdx];
-  document.getElementById('affirmation-text').textContent = AFFIRMATIONS[dayIdx];
-
-  renderMoods();
-  renderHabits();
-  renderGoals();
-  renderMoonPage(moon);
-  renderGratitude();
-  updateStats();
-}
-
-function renderMoods(){
-  const row = document.getElementById('mood-row');
-  row.innerHTML='';
-  MOODS.forEach((m,i)=>{
-    const btn=document.createElement('button');
-    btn.className='mood-btn'+(state.mood===i?' selected':'');
-    btn.textContent=m;
-    btn.onclick=()=>selectMood(i);
-    row.appendChild(btn);
-  });
-}
-
-function selectMood(i){
-  state.mood=i;
-  renderMoods();
-  document.getElementById('mood-saved-msg').classList.remove('hidden');
-  updateStats();
-}
-
-function renderHabits(){
-  const list=document.getElementById('habits-list');
-  list.innerHTML='';
-  state.habits.forEach(h=>{
-    const div=document.createElement('div');
-    div.className='habit-item'+(h.done?' done':'');
-    div.innerHTML=`
-      <div class="habit-check">${h.done?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0818" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-      <span class="habit-emoji">${h.emoji}</span>
-      <span class="habit-name">${h.name}</span>
-      <span class="streak-badge">${h.streak} day streak</span>
-    `;
-    div.onclick=()=>toggleHabit(h.id);
-    list.appendChild(div);
-  });
-  const done=state.habits.filter(h=>h.done).length;
-  const total=state.habits.length;
-  const pct=total?Math.round((done/total)*100):0;
-  document.getElementById('habits-progress-bar').style.width=pct+'%';
-  document.getElementById('habits-progress-text').textContent=`${done} of ${total} complete`;
-  updateStats();
-}
-
-function toggleHabit(id){
-  const h=state.habits.find(x=>x.id===id);
-  if(h){h.done=!h.done;if(h.done)h.streak++;}
-  renderHabits();
-}
-
-function addHabit(){
-  const inp=document.getElementById('new-habit-input');
-  const val=inp.value.trim();
-  if(!val)return;
-  const emojis=['🌟','💫','🔥','🌙','☀️','🌸','💎'];
-  state.habits.push({id:Date.now(),name:val,emoji:emojis[Math.floor(Math.random()*emojis.length)],done:false,streak:0});
-  inp.value='';
-  renderHabits();
-}
-
-function renderGoals(){
-  const list=document.getElementById('goals-list');
-  list.innerHTML='';
-  state.goals.forEach(g=>{
-    const div=document.createElement('div');
-    div.className='goal-item'+(g.done?' done':'');
-    div.innerHTML=`
-      <div class="goal-check">${g.done?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0818" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-      <span class="goal-text">${g.text}</span>
-      <span class="goal-cat">${g.category}</span>
-    `;
-    div.onclick=()=>toggleGoal(g.id);
-    list.appendChild(div);
-  });
-  updateStats();
-}
-
-function toggleGoal(id){
-  const g=state.goals.find(x=>x.id===id);
-  if(g)g.done=!g.done;
-  renderGoals();
-}
-
-function addGoal(){
-  const inp=document.getElementById('new-goal-input');
-  const cat=document.getElementById('goal-cat-select').value;
-  const val=inp.value.trim();
-  if(!val)return;
-  state.goals.unshift({id:Date.now(),text:val,category:cat,done:false});
-  inp.value='';
-  renderGoals();
-}
-
-function renderMoonPage(moon){
-  document.getElementById('big-moon').textContent=moon.emoji;
-  document.getElementById('moon-phase-name').textContent=moon.name;
-  const pct=Math.round((moon.dayInCycle/29.53)*100);
-  document.getElementById('moon-cycle-fill').style.width=pct+'%';
-  document.getElementById('moon-day-text').textContent=`Day ${Math.round(moon.dayInCycle)} of 29 in this cycle`;
-  const ritual=MOON_RITUALS[moon.name]||MOON_RITUALS['Full Moon'];
-  document.getElementById('ritual-title').textContent=ritual.title;
-  const steps=document.getElementById('ritual-steps');
-  steps.innerHTML='';
-  ritual.steps.forEach((s,i)=>{
-    steps.innerHTML+=`<div class="ritual-step"><div class="ritual-num">${i+1}</div><div class="ritual-text">${s}</div></div>`;
-  });
-}
-
-function renderGratitude(){
-  const past=document.getElementById('past-gratitude');
-  past.innerHTML='';
-  if(state.gratitudePast.length){
-    past.innerHTML+='<div class="divider"></div><div style="padding:0 16px 12px;"><div class="section-label" style="padding:0;">PAST ENTRIES</div></div>';
-    state.gratitudePast.forEach(e=>{
-      past.innerHTML+=`<div class="past-entry"><div class="past-date">${e.date}</div>${e.items.map(i=>`<div class="past-item">${i}</div>`).join('')}</div>`;
-    });
+/* ---- onboarding ---- */
+const ONB=[
+ {big:"Soul✦set",sub:"Your daily gratitude & wellbeing ritual.",cta:"Begin",act:()=>onbNext()},
+ {big:"A calmer mind,<br>one day at a time.",sub:"Give thanks, set intentions, build gentle habits and flow with the moon.",cta:"Beautiful",act:()=>onbNext()},
+ {name:true}
+];
+let onbI=0;
+function showOnb(){document.getElementById("onb").classList.add("open");renderOnb();}
+function renderOnb(){
+  const s=ONB[onbI];
+  const dots=`<div class="dots">${ONB.map((_,i)=>`<span class="dot ${i===onbI?'on':''}"></span>`).join("")}</div>`;
+  if(s.name){
+    document.getElementById("onbBody").innerHTML=`${dots}<p class="label center">Last thing</p><p class="big center serif">What may we<br>call you?</p>
+     <input id="nameInput" placeholder="Your name" style="margin-top:1.4rem;text-align:center;font-size:1.15rem" />
+     <button class="btn btn-primary btn-block" style="margin-top:1.2rem" onclick="finishOnb()">Enter Soulset ✦</button>
+     <small class="fine">Your reflections stay private on your device.</small>`;
+    setTimeout(()=>document.getElementById("nameInput").focus(),250);
+  } else {
+    document.getElementById("onbBody").innerHTML=`<p class="big center serif">${s.big}</p><p class="subtle center" style="font-size:1.05rem;max-width:320px;margin:.6rem auto 0">${s.sub}</p>${dots}<button class="btn btn-primary btn-block" onclick="ONB[${onbI}].act()">${s.cta} ✦</button>`;
   }
 }
+function onbNext(){onbI++;renderOnb();}
+function finishOnb(){const v=document.getElementById("nameInput").value.trim();S.name=v||"";save();document.getElementById("onb").classList.remove("open");startApp();}
 
-function saveJournal(){
-  const val=document.getElementById('journal-input').value.trim();
-  if(!val)return;
-  state.journalText=val;
-  state.journalSaved=true;
-  state.entries++;
-  document.getElementById('journal-area').classList.add('hidden');
-  document.getElementById('journal-saved').classList.remove('hidden');
-  document.getElementById('journal-saved-text').innerHTML=`<span class="saved-tick">✓</span>${val}`;
-  updateStats();
+/* ---- starfield ---- */
+function stars(){const c=document.getElementById("stars"),x=c.getContext("2d");function sz(){c.width=innerWidth;c.height=innerHeight;}sz();addEventListener("resize",sz);
+ const cols=['rgba(189,138,71,','rgba(155,130,224,','rgba(227,169,191,'];
+ const st=Array.from({length:48},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.7+.5,a:Math.random(),s:Math.random()*.014+.004,c:cols[Math.floor(Math.random()*cols.length)]}));
+ (function loop(){x.clearRect(0,0,c.width,c.height);st.forEach(p=>{p.a+=p.s;if(p.a>1||p.a<0)p.s*=-1;x.globalAlpha=Math.abs(p.a)*.55;x.fillStyle=p.c+'1)';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill();});x.globalAlpha=1;requestAnimationFrame(loop);})();}
+
+/* ---- boot ---- */
+function startApp(){document.getElementById("app").style.display="flex";buildNav();go("today");S.lastVisit=todayKey();save();}
+function boot(){
+  stars();handleReturn();
+  if(!S.name && !localStorage.getItem(KEY)){showOnb();}
+  else if(!S.name){ showOnb(); }
+  else { startApp(); }
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+  if(S.settings.reminder&&S.settings.reminder.on)setTimeout(scheduleReminder,1500);
 }
-
-function editJournal(){
-  document.getElementById('journal-input').value=state.journalText;
-  document.getElementById('journal-area').classList.remove('hidden');
-  document.getElementById('journal-saved').classList.add('hidden');
-}
-
-function saveGratitude(){
-  const g1=document.getElementById('grat-1').value.trim();
-  const g2=document.getElementById('grat-2').value.trim();
-  const g3=document.getElementById('grat-3').value.trim();
-  if(!g1&&!g2&&!g3)return;
-  state.gratitude=[g1,g2,g3];
-  state.gratitudeSaved=true;
-  document.getElementById('gratitude-form').classList.add('hidden');
-  document.getElementById('gratitude-saved-view').classList.remove('hidden');
-  const saved=document.getElementById('grat-saved-items');
-  const nums=['One','Two','Three'];
-  saved.innerHTML=state.gratitude.filter(g=>g).map((g,i)=>`<div style="margin-bottom:12px;"><div class="gratitude-num">${nums[i]}</div><div class="gratitude-saved">${g}</div></div>`).join('');
-}
-
-function editGratitude(){
-  document.getElementById('grat-1').value=state.gratitude[0];
-  document.getElementById('grat-2').value=state.gratitude[1];
-  document.getElementById('grat-3').value=state.gratitude[2];
-  document.getElementById('gratitude-form').classList.remove('hidden');
-  document.getElementById('gratitude-saved-view').classList.add('hidden');
-}
-
-function updateStats(){
-  document.getElementById('stat-habits').textContent=state.habits.filter(h=>h.done).length;
-  document.getElementById('stat-goals').textContent=state.goals.length;
-  document.getElementById('stat-entries').textContent=state.entries;
-  const streak = state.journalSaved ? 1 : 0;
-  document.getElementById('stat-streak').textContent=streak;
-}
-
-function showTab(tab, btn){
-  document.querySelectorAll('[id^="page-"]').forEach(p=>p.classList.add('hidden'));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  const page=document.getElementById('page-'+tab);
-  if(page){page.classList.remove('hidden');}
-  btn.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-init();
+boot();
 </script>
 </body>
 </html>
