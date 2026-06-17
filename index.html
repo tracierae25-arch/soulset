@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Soulset" />
-<meta name="description" content="Soulset — your daily gratitude & wellbeing ritual. Reflect, give thanks, build calm habits and manifest the life you want." />
+<meta name="description" content="Soulset: your daily gratitude & wellbeing ritual. Reflect, give thanks, build calm habits and manifest the life you want." />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -201,7 +201,7 @@ small.fine{display:block;color:var(--faint);font-size:.72rem;text-align:center;m
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============ Soulset — daily gratitude & wellbeing ============ */
+/* ============ Soulset: daily gratitude & wellbeing ============ */
 /* ---- CONFIG: pricing + Stripe (edit these in STRIPE-SETUP.md) ---- */
 const CONFIG = {
   prices: {
@@ -237,7 +237,7 @@ const MOON_RITUALS={
  "Waxing Gibbous":{e:"Refine & trust",t:"Adjust your course. Tend to the details. Trust that what you're building is taking form."},
  "Full Moon":{e:"Release & gratitude",t:"Celebrate how far you've come. Write what you're ready to release, then let it go under the full light."},
  "Waning Gibbous":{e:"Gratitude & sharing",t:"Share your light. Express thanks to someone who helped you. Reflect on a recent win."},
- "Last Quarter":{e:"Forgive & let go",t:"Forgive yourself for something small. Clear space — physically or emotionally — for what's next."},
+ "Last Quarter":{e:"Forgive & let go",t:"Forgive yourself for something small. Clear space, physically or emotionally, for what's next."},
  "Waning Crescent":{e:"Rest & surrender",t:"Slow down. Rest is productive. Surrender what is no longer yours to carry before the new moon."}
 };
 function moonPhase(date=new Date()){
@@ -344,7 +344,7 @@ function rHabits(){
   document.getElementById("s-habits").innerHTML=`
    <h2 class="sec">Daily Rituals</h2>
    <p class="sec-sub">Small acts of self-care, every day.</p>
-   ${S.habits.length?S.habits.map((h,i)=>{const done=h.log&&h.log[k];return `<div class="item ${done?'done':''}"><button class="check" onclick="toggleHabit(${i})">${done?'✓':''}</button><div class="it-name">${esc(h.name)}<div class="it-sub">${habitStreak(h)} day streak</div></div><button onclick="delHabit(${i})" style="color:var(--faint);font-size:1.1rem">✕</button></div>`}).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">Add your first ritual below — like “Drink water”, “Move my body”, or “10 deep breaths”.</p>'}
+   ${S.habits.length?S.habits.map((h,i)=>{const done=h.log&&h.log[k];return `<div class="item ${done?'done':''}"><button class="check" onclick="toggleHabit(${i})">${done?'✓':''}</button><div class="it-name">${esc(h.name)}<div class="it-sub">${habitStreak(h)} day streak</div></div><button onclick="delHabit(${i})" style="color:var(--faint);font-size:1.1rem">✕</button></div>`}).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">Add your first ritual below, like “Drink water”, “Move my body”, or “10 deep breaths”.</p>'}
    <button class="add" onclick="addHabit()">+ Add a ritual</button>
    ${(!S.premium&&S.habits.length>=free)?'<p class="muted center" style="font-size:.78rem;margin-top:.9rem">Free includes 3 rituals · <a class="link" onclick="openPaywall(\'Unlimited rituals\')">unlock unlimited ✦</a></p>':''}
   `;
@@ -461,7 +461,7 @@ function checkout(planId){
     const url=plan.stripeLink + (plan.stripeLink.includes('?')?'&':'?') + "client_reference_id=" + encodeURIComponent(S.name||"soul");
     window.location.href=url;
   } else {
-    // Stripe not connected yet — demo unlock so the experience is testable
+    // Stripe not connected yet: demo unlock so the experience is testable
     closeSheet();
     openSheet(`<div class="grab"></div><h2 class="sec center">Almost there ✦</h2>
       <p class="sec-sub center" style="max-width:340px;margin:0 auto 1rem">Payments aren't connected yet. Follow <b>STRIPE-SETUP.md</b> to plug in your Stripe (5 mins) and this button will take real subscriptions.</p>
@@ -511,13 +511,13 @@ async function scheduleReminder(){
     if('TimestampTrigger' in window){
       await reg.showNotification('Soulset ✦',{body:msg,tag:'soulset-daily',icon:'icon-192.png',badge:'icon-192.png',showTrigger:new TimestampTrigger(next.getTime()),data:{url:'./'}});
     }
-  }catch(e){/* trigger API not supported — reminder still re-arms each visit */}
+  }catch(e){/* trigger API not supported: reminder still re-arms each visit */}
 }
 async function testReminder(){
   if(!('Notification' in window)){toast('Notifications aren\'t supported here');return;}
   let perm=Notification.permission; if(perm!=='granted')perm=await Notification.requestPermission();
   if(perm!=='granted'){toast('Allow notifications first');return;}
-  try{ if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.ready;reg.showNotification('Soulset ✦',{body:'Your daily nudge — take a mindful moment. 🌙',icon:'icon-192.png',badge:'icon-192.png',data:{url:'./'}});} else {new Notification('Soulset ✦',{body:'Your daily nudge.'});} toast('Sent ✦ check your notifications'); }catch(e){toast('Could not show notification here');}
+  try{ if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.ready;reg.showNotification('Soulset ✦',{body:'Your daily nudge: take a mindful moment. 🌙',icon:'icon-192.png',badge:'icon-192.png',data:{url:'./'}});} else {new Notification('Soulset ✦',{body:'Your daily nudge.'});} toast('Sent ✦ check your notifications'); }catch(e){toast('Could not show notification here');}
 }
 
 /* ---- sheet/toast ---- */
