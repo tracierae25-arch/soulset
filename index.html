@@ -107,6 +107,11 @@ h2.sec{font-family:var(--serif);font-size:1.5rem;font-weight:500;margin:.2rem 0 
 .vision{background:linear-gradient(150deg,rgba(157,139,224,.16),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:18px;padding:1rem 1.1rem;margin-bottom:.7rem}
 .vision .cat{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
 .vision p{margin:.25rem 0 0;font-family:var(--serif);font-size:1.15rem;line-height:1.35}
+.vision .vimg{width:100%;border-radius:12px;margin-bottom:.6rem;display:block;object-fit:cover;max-height:300px;background:var(--soft)}
+.vision-preview{position:relative;width:100%;min-height:150px;border:1.5px dashed var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:500;background:rgba(233,201,135,.05);cursor:pointer;overflow:hidden}
+.vision-preview.has{border-style:solid;min-height:auto}
+.vision-preview img{width:100%;display:block;object-fit:cover;max-height:340px}
+.vision-preview .vp-x{position:absolute;top:.5rem;right:.5rem;width:30px;height:30px;border-radius:999px;background:rgba(20,12,26,.6);color:#fff;font-size:.85rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);border:none}
 
 /* moon */
 .moondisc{width:140px;height:140px;border-radius:50%;margin:.5rem auto 1rem;background:radial-gradient(circle at 35% 30%,#fff8e7,#d9c79a 60%,#8a7bbf 100%);box-shadow:0 0 60px -8px rgba(244,221,168,.55),inset -22px -10px 40px rgba(11,7,32,.85);position:relative}
@@ -425,7 +430,7 @@ function rVision(){
     document.getElementById("s-vision").innerHTML=`
      <h2 class="sec">Vision Board</h2><p class="sec-sub">What you are calling into existence.</p>
      <div class="lockcard"><div class="ic">✦</div><p class="serif" style="font-size:1.4rem;margin:.5rem 0 .2rem">Manifest with intention</p>
-     <p class="muted" style="font-size:.9rem;max-width:300px;margin:.3rem auto 0">Create a beautiful vision board across Life, Career, Love, Abundance & more. Set intentions and watch them unfold.</p>
+     <p class="muted" style="font-size:.9rem;max-width:300px;margin:.3rem auto 0">Create a beautiful vision board with your own photos across Life, Career, Love, Abundance & more. Add pictures and words, set intentions and watch them unfold.</p>
      <button class="btn btn-primary" style="margin-top:1.1rem" onclick="openPaywall('Vision board')">Unlock with Premium ✦</button></div>`;
     return;
   }
@@ -433,15 +438,26 @@ function rVision(){
   document.getElementById("s-vision").innerHTML=`
    <h2 class="sec">Vision Board</h2><p class="sec-sub">What you are calling into existence.</p>
    <div class="chips">${VISION_CATS.map(c=>`<button class="chip ${c===cat?'sel':''}" onclick="window.__visionCat='${c}';render('vision')">${c}</button>`).join("")}</div>
-   ${list.length?list.map((v,idx)=>`<div class="vision"><div style="display:flex;justify-content:space-between"><span class="cat">${v.cat}</span><button onclick="delVision('${v.id}')" style="color:var(--faint)">✕</button></div><p>${esc(v.text)}</p></div>`).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">No intentions here yet. Add what you\'re calling in. ✦</p>'}
-   <button class="add" onclick="addVision('${cat}')">+ Add intention</button>`;
+   ${list.length?list.map(v=>`<div class="vision">${v.hasImg?`<img class="vimg" id="vimg_${v.id}" alt="">`:""}<div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">${v.cat}</span><button onclick="delVision('${v.id}')" style="color:var(--faint)">✕</button></div>${v.text?`<p>${esc(v.text)}</p>`:""}</div>`).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">No intentions here yet. Add a photo and what you\'re calling in. ✦</p>'}
+   <button class="add" onclick="addVision('${cat}')">+ Add to board</button>`;
+  list.filter(v=>v.hasImg).forEach(async v=>{ try{const d=await idbGet(v.id); const el=document.getElementById("vimg_"+v.id); if(el&&d) el.src=d; }catch(e){} });
 }
-function addVision(cat){openSheet(`<div class="grab"></div><h2 class="sec center">New intention</h2><p class="sec-sub center">Category: ${cat}</p>
-  <textarea id="visionInput" rows="3" placeholder="I am calling in…"></textarea>
-  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="commitVision('${cat}')">Set intention ✦</button>`);
+window.__pendingVisionImg=null;
+function addVision(cat){window.__pendingVisionImg=null;openSheet(`<div class="grab"></div><h2 class="sec center">Add to your board</h2><p class="sec-sub center">Category: ${cat}</p>
+  <div id="visionPreview" class="vision-preview" onclick="document.getElementById('visionPhoto').click()"><span>＋ Add a photo</span></div>
+  <input type="file" id="visionPhoto" accept="image/*" style="display:none" onchange="onVisionPhoto(event)">
+  <textarea id="visionInput" rows="3" placeholder="I am calling in…" style="margin-top:.8rem"></textarea>
+  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="commitVision('${cat}')">Add to board ✦</button>`);
   setTimeout(()=>document.getElementById("visionInput").focus(),200);}
-function commitVision(cat){const v=document.getElementById("visionInput").value.trim();if(!v)return;S.visions.push({id:Date.now()+"",cat,text:v});save();closeSheet();render('vision');toast("Intention set ✦");}
-function delVision(id){S.visions=S.visions.filter(v=>v.id!==id);save();render('vision');}
+function onVisionPhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const max=1100;let w=img.width,h=img.height;if(w>h&&w>max){h=Math.round(h*max/w);w=max;}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);window.__pendingVisionImg=c.toDataURL("image/jpeg",0.72);const pv=document.getElementById("visionPreview");if(pv){pv.classList.add("has");pv.innerHTML=`<img src="${window.__pendingVisionImg}" alt=""><button class="vp-x" onclick="event.stopPropagation();clearVisionPhoto()">✕</button>`;}};img.src=rd.result;};rd.readAsDataURL(f);}
+function clearVisionPhoto(){window.__pendingVisionImg=null;const pv=document.getElementById("visionPreview");if(pv){pv.classList.remove("has");pv.innerHTML="<span>＋ Add a photo</span>";}const fp=document.getElementById("visionPhoto");if(fp)fp.value="";}
+async function commitVision(cat){const v=document.getElementById("visionInput").value.trim();const img=window.__pendingVisionImg;if(!v&&!img){toast("Add a photo or a few words ✦");return;}const id=Date.now()+"";if(img){try{await idbPut(id,img);}catch(e){}}S.visions.push({id,cat,text:v,hasImg:!!img});save();window.__pendingVisionImg=null;closeSheet();render('vision');toast("Added to your board ✦");}
+function delVision(id){const v=S.visions.find(x=>x.id===id);if(v&&v.hasImg){idbDel(id).catch(()=>{});}S.visions=S.visions.filter(x=>x.id!==id);save();render('vision');}
+/* ---- local media store (vision board photos, kept on device) ---- */
+function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open("soulset-media",1);r.onupgradeneeded=()=>{r.result.createObjectStore("img");};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbPut(k,v){const db=await idbOpen();return new Promise((res,rej)=>{const t=db.transaction("img","readwrite");t.objectStore("img").put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
+async function idbGet(k){const db=await idbOpen();return new Promise((res,rej)=>{const t=db.transaction("img","readonly");const rq=t.objectStore("img").get(k);rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error);});}
+async function idbDel(k){const db=await idbOpen();return new Promise((res,rej)=>{const t=db.transaction("img","readwrite");t.objectStore("img").delete(k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
 
 function rMoon(){
   if(!S.premium){
