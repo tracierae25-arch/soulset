@@ -1,5 +1,5 @@
-/* Soulset service worker — offline-first app shell */
-const CACHE = 'soulset-v1';
+/* Soulset service worker — network-first for the app, offline fallback */
+const CACHE = 'soulset-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -26,13 +26,30 @@ self.addEventListener('notificationclick', e => {
 });
 
 self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin) return; // let Stripe etc. pass through
+  const req = e.request;
+  const url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== location.origin) return; // let Stripe etc. pass through
+
+  // The app shell (HTML navigations) is network-first so updates always show.
+  const isDoc = req.mode === 'navigate' || req.destination === 'document' ||
+                url.pathname.endsWith('/') || url.pathname.endsWith('.html');
+  if (isDoc) {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(()=>{});
+        return res;
+      }).catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Static assets (icons, manifest) are cache-first for speed.
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
+    caches.match(req).then(cached => cached || fetch(req).then(res => {
       const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, copy)).catch(()=>{});
+      caches.open(CACHE).then(c => c.put(req, copy)).catch(()=>{});
       return res;
-    }).catch(() => caches.match('./index.html')))
+    }).catch(() => cached))
   );
 });
