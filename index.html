@@ -112,6 +112,24 @@ h2.sec{font-family:var(--serif);font-size:1.5rem;font-weight:500;margin:.2rem 0 
 .vision-preview.has{border-style:solid;min-height:auto}
 .vision-preview img{width:100%;display:block;object-fit:cover;max-height:340px}
 .vision-preview .vp-x{position:absolute;top:.5rem;right:.5rem;width:30px;height:30px;border-radius:999px;background:rgba(20,12,26,.6);color:#fff;font-size:.85rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);border:none}
+/* freeform vision canvas */
+.vbar{display:flex;gap:.6rem;margin:.1rem 0 .85rem}
+.vbtn{flex:1;padding:.75rem;border:1px solid var(--line);border-radius:14px;background:var(--card2);color:var(--ink);font-weight:600;font-size:.85rem;letter-spacing:.01em}
+.vbtn:active{transform:scale(.98)}
+.vstage{position:relative;width:100%;height:62vh;max-height:580px;border:1px solid var(--line);border-radius:22px;overflow:hidden;touch-action:none;
+  background:radial-gradient(420px 320px at 78% 8%,rgba(247,223,232,.7),transparent),radial-gradient(420px 320px at 10% 96%,rgba(230,220,247,.7),transparent),linear-gradient(170deg,#fdf7f1,#f1e8f4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 16px 40px -28px rgba(120,80,140,.5)}
+.vempty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:.92rem;padding:0 2rem;line-height:1.6}
+.vel{position:absolute;left:50%;top:50%;cursor:grab;-webkit-user-select:none;user-select:none;touch-action:none}
+.vel:active{cursor:grabbing}
+.vel.photo img{width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 12px 26px -12px rgba(60,40,80,.65);pointer-events:none}
+.vel .vtext{font-family:var(--serif);color:var(--ink);text-align:center;line-height:1.16;word-wrap:break-word;text-shadow:0 1px 12px rgba(255,255,255,.65)}
+.vel .vctl{position:absolute;display:none}
+.vel.sel{outline:2px dashed rgba(189,138,71,.85);outline-offset:7px;border-radius:4px}
+.vel.sel .vctl{display:flex}
+.vel .vdel{top:-16px;right:-16px;width:30px;height:30px;border-radius:999px;background:#3f2a45;color:#fff;align-items:center;justify-content:center;font-size:.82rem;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer}
+.vel .vrz{bottom:-16px;right:-16px;width:28px;height:28px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:nwse-resize}
+.vhint{font-size:.74rem;text-align:center;margin:.65rem 0 0;line-height:1.5}
 
 /* moon */
 .moondisc{width:140px;height:140px;border-radius:50%;margin:.5rem auto 1rem;background:radial-gradient(circle at 35% 30%,#fff8e7,#d9c79a 60%,#8a7bbf 100%);box-shadow:0 0 60px -8px rgba(244,221,168,.55),inset -22px -10px 40px rgba(11,7,32,.85);position:relative}
@@ -434,25 +452,119 @@ function rVision(){
      <button class="btn btn-primary" style="margin-top:1.1rem" onclick="openPaywall('Vision board')">Unlock with Premium ✦</button></div>`;
     return;
   }
-  const list=S.visions.filter(v=>v.cat===cat);
+  vMigrate();
+  const list=S.visions.filter(v=>v.cat===cat).sort((a,b)=>(a.z||0)-(b.z||0));
   document.getElementById("s-vision").innerHTML=`
-   <h2 class="sec">Vision Board</h2><p class="sec-sub">What you are calling into existence.</p>
-   <div class="chips">${VISION_CATS.map(c=>`<button class="chip ${c===cat?'sel':''}" onclick="window.__visionCat='${c}';render('vision')">${c}</button>`).join("")}</div>
-   ${list.length?list.map(v=>`<div class="vision">${v.hasImg?`<img class="vimg" id="vimg_${v.id}" alt="">`:""}<div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">${v.cat}</span><button onclick="delVision('${v.id}')" style="color:var(--faint)">✕</button></div>${v.text?`<p>${esc(v.text)}</p>`:""}</div>`).join(""):'<p class="muted" style="font-size:.9rem;margin-bottom:1rem">No intentions here yet. Add a photo and what you\'re calling in. ✦</p>'}
-   <button class="add" onclick="addVision('${cat}')">+ Add to board</button>`;
-  list.filter(v=>v.hasImg).forEach(async v=>{ try{const d=await idbGet(v.id); const el=document.getElementById("vimg_"+v.id); if(el&&d) el.src=d; }catch(e){} });
+   <h2 class="sec">Vision Board</h2><p class="sec-sub">Drag, pinch and arrange. This board is yours.</p>
+   <div class="chips">${VISION_CATS.map(c=>`<button class="chip ${c===cat?'sel':''}" onclick="vSelect(null);window.__visionCat='${c}';render('vision')">${c}</button>`).join("")}</div>
+   <div class="vbar">
+     <button class="vbtn" onclick="document.getElementById('vPhoto').click()">✦ Add photo</button>
+     <button class="vbtn" onclick="vAddText('${cat}')">✦ Add text</button>
+     <input type="file" id="vPhoto" accept="image/*" style="display:none" onchange="vAddPhoto(event,'${cat}')">
+   </div>
+   <div class="vstage" id="vstage">${list.length?'':'<div class="vempty">Your canvas is empty.<br>Tap ✦ Add photo or ✦ Add text to begin.</div>'}</div>
+   <p class="vhint muted">Drag to move · pinch or drag the gold dot to resize · tap to select · double-tap text to edit</p>`;
+  const stage=document.getElementById("vstage");
+  list.forEach(v=>stage.appendChild(vMakeEl(v)));
+  stage.addEventListener('pointerdown',e=>{ if(e.target===stage||e.target.classList.contains('vempty')) vSelect(null); });
+  list.filter(v=>v.type==='photo').forEach(async v=>{ try{const d=await idbGet(v.id); const im=document.getElementById('vimg_'+v.id); if(im&&d) im.src=d; }catch(e){} });
+  if(window.__vsel) vSelect(window.__vsel);
 }
-window.__pendingVisionImg=null;
-function addVision(cat){window.__pendingVisionImg=null;openSheet(`<div class="grab"></div><h2 class="sec center">Add to your board</h2><p class="sec-sub center">Category: ${cat}</p>
-  <div id="visionPreview" class="vision-preview" onclick="document.getElementById('visionPhoto').click()"><span>＋ Add a photo</span></div>
-  <input type="file" id="visionPhoto" accept="image/*" style="display:none" onchange="onVisionPhoto(event)">
-  <textarea id="visionInput" rows="3" placeholder="I am calling in…" style="margin-top:.8rem"></textarea>
-  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="commitVision('${cat}')">Add to board ✦</button>`);
-  setTimeout(()=>document.getElementById("visionInput").focus(),200);}
-function onVisionPhoto(e){const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const max=1100;let w=img.width,h=img.height;if(w>h&&w>max){h=Math.round(h*max/w);w=max;}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);window.__pendingVisionImg=c.toDataURL("image/jpeg",0.72);const pv=document.getElementById("visionPreview");if(pv){pv.classList.add("has");pv.innerHTML=`<img src="${window.__pendingVisionImg}" alt=""><button class="vp-x" onclick="event.stopPropagation();clearVisionPhoto()">✕</button>`;}};img.src=rd.result;};rd.readAsDataURL(f);}
-function clearVisionPhoto(){window.__pendingVisionImg=null;const pv=document.getElementById("visionPreview");if(pv){pv.classList.remove("has");pv.innerHTML="<span>＋ Add a photo</span>";}const fp=document.getElementById("visionPhoto");if(fp)fp.value="";}
-async function commitVision(cat){const v=document.getElementById("visionInput").value.trim();const img=window.__pendingVisionImg;if(!v&&!img){toast("Add a photo or a few words ✦");return;}const id=Date.now()+"";if(img){try{await idbPut(id,img);}catch(e){}}S.visions.push({id,cat,text:v,hasImg:!!img});save();window.__pendingVisionImg=null;closeSheet();render('vision');toast("Added to your board ✦");}
-function delVision(id){const v=S.visions.find(x=>x.id===id);if(v&&v.hasImg){idbDel(id).catch(()=>{});}S.visions=S.visions.filter(x=>x.id!==id);save();render('vision');}
+/* ---- freeform vision canvas ---- */
+function vClamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function vDist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+function vAng(a,b){return Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;}
+function vStageSize(){const s=document.getElementById('vstage');const r=s.getBoundingClientRect();return {w:r.width,h:r.height,r};}
+function vMaxZ(cat){return Math.max(0,...S.visions.filter(x=>x.cat===cat).map(x=>x.z||0));}
+function vMigrate(){let ch=false;const cc={};S.visions.forEach(v=>{
+  if(!v.type){v.type=v.hasImg?'photo':'text';ch=true;}
+  if(v.x===undefined){const n=cc[v.cat]=(cc[v.cat]||0)+1;v.x=0.5;v.y=0.26+0.17*((n-1)%4);v.w=v.type==='photo'?0.56:0.78;if(v.type==='text')v.fs=0.08;v.rot=0;v.z=n;ch=true;}
+});if(ch)save();}
+function vPlace(node,v){const {w,h}=vStageSize();node.style.left=(v.x*w)+'px';node.style.top=(v.y*h)+'px';node.style.transform=`translate(-50%,-50%) rotate(${v.rot||0}deg)`;node.style.zIndex=v.z||1;
+  if(v.type==='photo'){node.style.width=(v.w*w)+'px';}
+  else{node.style.width=((v.w||0.78)*w)+'px';const t=node.querySelector('.vtext');if(t)t.style.fontSize=((v.fs||0.08)*w)+'px';}}
+function vMakeEl(v){
+  const el=document.createElement('div');el.className='vel '+v.type;el.dataset.id=v.id;
+  el.innerHTML = v.type==='photo'
+    ? `<img id="vimg_${v.id}" alt="" draggable="false">`
+    : `<div class="vtext" id="vtxt_${v.id}">${esc(v.text||'')}</div>`;
+  el.insertAdjacentHTML('beforeend',`<button class="vctl vdel" data-act="del">✕</button><div class="vctl vrz" data-act="rz"></div>`);
+  vBind(el,v);
+  requestAnimationFrame(()=>vPlace(el,v));
+  return el;
+}
+function vBind(el,v){
+  const pts=new Map(); let st=null;
+  el.addEventListener('pointerdown',e=>{
+    const act=e.target.dataset.act;
+    if(act==='del'){e.stopPropagation();vDelEl(v);return;}
+    if(act==='rz'){e.stopPropagation();vResize(e,el,v);return;}
+    e.stopPropagation();e.preventDefault();
+    vSelect(v.id);
+    try{el.setPointerCapture(e.pointerId);}catch(_){}
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===1){st={x0:v.x,y0:v.y,px:e.clientX,py:e.clientY};}
+    else if(pts.size===2){const a=[...pts.values()];st=Object.assign(st||{},{w0:v.w,fs0:v.fs,r0:v.rot||0,d0:vDist(a[0],a[1]),a0:vAng(a[0],a[1])});}
+  });
+  el.addEventListener('pointermove',e=>{
+    if(!pts.has(e.pointerId))return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const {w:sw,h:sh}=vStageSize();
+    if(pts.size===1&&st){
+      v.x=vClamp(st.x0+(e.clientX-st.px)/sw,0.02,0.98);
+      v.y=vClamp(st.y0+(e.clientY-st.py)/sh,0.02,0.98);
+      vPlace(el,v);
+    }else if(pts.size>=2&&st&&st.d0){
+      const a=[...pts.values()];const ratio=vDist(a[0],a[1])/st.d0;
+      if(v.type==='photo')v.w=vClamp(st.w0*ratio,0.08,1.7);
+      else v.fs=vClamp((st.fs0||0.08)*ratio,0.03,0.42);
+      v.rot=st.r0+(vAng(a[0],a[1])-st.a0);
+      vPlace(el,v);
+    }
+  });
+  const up=e=>{ if(pts.has(e.pointerId))pts.delete(e.pointerId); if(pts.size===0){save();} };
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  if(v.type==='text')el.addEventListener('dblclick',ev=>{ev.stopPropagation();vEditText(v.id);});
+}
+function vResize(e,el,v){
+  try{el.setPointerCapture(e.pointerId);}catch(_){}
+  const {w:sw,h:sh,r}=vStageSize();
+  const cx=r.left+v.x*sw, cy=r.top+v.y*sh;
+  const base=Math.hypot(e.clientX-cx,e.clientY-cy)||1;
+  const w0=v.w||0.4, fs0=v.fs||0.08;
+  const mv=ev=>{const d=Math.hypot(ev.clientX-cx,ev.clientY-cy);const ratio=d/base;
+    if(v.type==='photo')v.w=vClamp(w0*ratio,0.08,1.7);else v.fs=vClamp(fs0*ratio,0.03,0.42);vPlace(el,v);};
+  const fin=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',fin);el.removeEventListener('pointercancel',fin);save();};
+  el.addEventListener('pointermove',mv);el.addEventListener('pointerup',fin);el.addEventListener('pointercancel',fin);
+}
+function vSelect(id){
+  window.__vsel=id||null;
+  document.querySelectorAll('.vel').forEach(n=>n.classList.toggle('sel',n.dataset.id===id));
+  if(id){const v=S.visions.find(x=>x.id===id);if(v){const mz=vMaxZ(v.cat);if((v.z||0)<mz){v.z=mz+1;const node=[...document.querySelectorAll('.vel')].find(n=>n.dataset.id===id);if(node)node.style.zIndex=v.z;save();}}}
+}
+function vAddPhoto(e,cat){const f=e.target.files&&e.target.files[0];if(!f)return;e.target.value="";
+  const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=async()=>{
+    const max=1200;let w=img.width,h=img.height;if(w>h&&w>max){h=Math.round(h*max/w);w=max;}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max;}
+    const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
+    const data=c.toDataURL("image/jpeg",0.72);const id=Date.now()+"";
+    try{await idbPut(id,data);}catch(_){}
+    S.visions.push({id,cat,type:'photo',hasImg:true,x:0.5,y:0.45,w:0.55,rot:(Math.random()*8-4),z:vMaxZ(cat)+1});
+    save();render('vision');window.__vsel=id;setTimeout(()=>vSelect(id),60);toast("Added to your board ✦");
+  };img.src=rd.result;};rd.readAsDataURL(f);}
+function vAddText(cat){openSheet(`<div class="grab"></div><h2 class="sec center">Add text</h2><p class="sec-sub center">A word or intention for your board.</p>
+  <textarea id="vTextIn" rows="2" placeholder="I am calling in…"></textarea>
+  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="vCommitText('${cat}')">Add to board ✦</button>`);
+  setTimeout(()=>document.getElementById("vTextIn").focus(),200);}
+function vCommitText(cat){const t=document.getElementById("vTextIn").value.trim();if(!t){toast("Type a few words ✦");return;}
+  const id=Date.now()+"";S.visions.push({id,cat,type:'text',text:t,x:0.5,y:0.4,w:0.78,fs:0.085,rot:0,z:vMaxZ(cat)+1});
+  save();closeSheet();render('vision');window.__vsel=id;setTimeout(()=>vSelect(id),60);toast("Added to your board ✦");}
+function vEditText(id){const v=S.visions.find(x=>x.id===id);if(!v)return;
+  openSheet(`<div class="grab"></div><h2 class="sec center">Edit text</h2>
+  <textarea id="vTextIn" rows="2">${esc(v.text||'')}</textarea>
+  <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="vSaveText('${id}')">Save ✦</button>`);
+  setTimeout(()=>document.getElementById("vTextIn").focus(),200);}
+function vSaveText(id){const v=S.visions.find(x=>x.id===id);if(!v)return;v.text=document.getElementById("vTextIn").value.trim();save();closeSheet();render('vision');}
+function vDelEl(v){if(v.type==='photo'){idbDel(v.id).catch(()=>{});}S.visions=S.visions.filter(x=>x.id!==v.id);if(window.__vsel===v.id)window.__vsel=null;save();render('vision');}
 /* ---- local media store (vision board photos, kept on device) ---- */
 function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open("soulset-media",1);r.onupgradeneeded=()=>{r.result.createObjectStore("img");};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
 async function idbPut(k,v){const db=await idbOpen();return new Promise((res,rej)=>{const t=db.transaction("img","readwrite");t.objectStore("img").put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error);});}
